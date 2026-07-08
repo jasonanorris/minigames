@@ -188,7 +188,7 @@ Make the app feel finished on mobile.
 Validate the game registry and lifecycle with additional games.
 
 - [x] Reaction Time with randomized delay, early-tap detection, and local best time
-- [ ] Memory Grid
+- [x] Memory Grid with shuffled pairs, move counting, and local best score
 - [ ] Quick Math
 
 ## Automated Testing
@@ -197,6 +197,7 @@ Validate the game registry and lifecycle with additional games.
 - [x] Check manifest availability and service worker registration
 - [x] Check Tap Race timing, restart behavior, and saved best score
 - [x] Check Reaction Time early taps and saved best time
+- [x] Check Memory Grid matching, restart behavior, and saved best score
 
 ## Documentation and Trust
 

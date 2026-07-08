@@ -461,6 +461,96 @@ p {
   background: #7e3547;
 }
 
+.memory-game {
+  display: grid;
+  width: min(34rem, 100%);
+  gap: 10px;
+}
+
+.memory-score-grid .score-tile {
+  min-height: 58px;
+}
+
+.memory-score-grid .score-tile strong {
+  font-size: clamp(1.2rem, 6vw, 2rem);
+}
+
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: min(420px, 52dvh, 100%);
+  aspect-ratio: 1;
+  place-self: center;
+  gap: 6px;
+}
+
+.memory-card {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  place-items: center;
+  border: 1px solid #46606c;
+  border-radius: var(--radius);
+  background:
+    linear-gradient(135deg, transparent 42%, rgba(61, 214, 208, 0.16) 42% 58%, transparent 58%),
+    var(--panel-strong);
+  color: transparent;
+  cursor: pointer;
+  font-size: clamp(1.25rem, 8vw, 2.4rem);
+  font-weight: 900;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.memory-card:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.memory-card:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.memory-card.is-revealed {
+  border-color: rgba(255, 255, 255, 0.36);
+  color: #ffffff;
+  background: #357b77;
+}
+
+.memory-card.pair-b {
+  background: #a74352;
+}
+
+.memory-card.pair-c {
+  background: #3c68a8;
+}
+
+.memory-card.pair-d {
+  background: #8b5aac;
+}
+
+.memory-card.pair-e {
+  background: #9b652f;
+}
+
+.memory-card.pair-f {
+  background: #397d4d;
+}
+
+.memory-card.pair-g {
+  background: #a34f8a;
+}
+
+.memory-card.pair-h {
+  background: #5d6578;
+}
+
+.memory-card.is-matched {
+  opacity: 0.58;
+  cursor: default;
+}
+
 @media (min-width: 820px) {
   .app-shell {
     padding-top: 36px;
@@ -516,5 +606,9 @@ p {
 
   .reaction-target {
     width: min(260px, 48dvh, 100%);
+  }
+
+  .memory-grid {
+    width: min(360px, 43dvh, 100%);
   }
 }

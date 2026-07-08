@@ -22,6 +22,7 @@ Game progress and scores are stored locally in the browser. MiniGames does not s
 
 - Tap Race: tap as fast as you can before the 10-second timer ends.
 - Reaction Time: wait for green, then tap as quickly as possible.
+- Memory Grid: match all eight pairs in as few moves as possible.
 
 ## Local Development
 

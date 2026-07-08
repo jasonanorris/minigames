@@ -4,7 +4,7 @@
   "private": true,
   "description": "A small, privacy-friendly PWA collection of mini games.",
   "scripts": {
-    "check": "node --check assets/js/app.js && node --check assets/js/games/index.js && node --check assets/js/games/tap-race.js && node --check assets/js/games/reaction-time.js && node --check sw.js && node -e \"JSON.parse(require('fs').readFileSync('manifest.json','utf8'))\"",
+    "check": "node --check assets/js/app.js && node --check assets/js/games/index.js && node --check assets/js/games/tap-race.js && node --check assets/js/games/reaction-time.js && node --check assets/js/games/memory-grid.js && node --check sw.js && node -e \"JSON.parse(require('fs').readFileSync('manifest.json','utf8'))\"",
     "serve": "python3 -m http.server 3000",
     "test": "playwright test"
   },

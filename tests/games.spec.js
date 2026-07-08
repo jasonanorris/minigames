@@ -52,3 +52,38 @@ test("Reaction Time records and reloads a best time", async ({ page }) => {
   await page.getByRole("button", { name: /Reaction Time/ }).click();
   await expect(page.locator("#reaction-best")).toHaveText(`${savedBest} ms`);
 });
+
+test("Memory Grid completes, saves its best, and starts a new board", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /Memory Grid/ }).click();
+
+  const pairs = await page.locator(".memory-card").evaluateAll((cards) => {
+    const groupedCards = {};
+
+    for (const card of cards) {
+      groupedCards[card.dataset.pair] ||= [];
+      groupedCards[card.dataset.pair].push(card.dataset.cardId);
+    }
+
+    return Object.values(groupedCards);
+  });
+
+  for (const [firstId, secondId] of pairs) {
+    await page.locator(`[data-card-id="${firstId}"]`).click();
+    await page.locator(`[data-card-id="${secondId}"]`).click();
+  }
+
+  await expect(page.locator("#memory-pairs")).toHaveText("8 / 8");
+  await expect(page.locator("#memory-moves")).toHaveText("8");
+  await expect(page.locator("#memory-best")).toHaveText("8");
+  await expect(page.locator("#memory-message")).toHaveText("New best: 8 moves.");
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem("minigames.memoryGrid.bestMoves")))
+    .toBe("8");
+
+  await page.getByRole("button", { name: "New game" }).click();
+  await expect(page.locator("#memory-moves")).toHaveText("0");
+  await expect(page.locator("#memory-pairs")).toHaveText("0 / 8");
+  await expect(page.locator("#memory-best")).toHaveText("8");
+  await expect(page.locator(".memory-card.is-revealed")).toHaveCount(0);
+});
