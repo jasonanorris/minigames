@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#101820">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="MiniGames">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>MiniGames</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <script src="assets/js/app.js" type="module"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Offline-friendly games</p>
+          <h1>MiniGames</h1>
+        </div>
+        <div class="status-pill" id="app-status" aria-live="polite">Ready</div>
+      </header>
+
+      <main class="app-main">
+        <section class="game-library" aria-labelledby="library-title">
+          <div class="section-heading">
+            <h2 id="library-title">Games</h2>
+            <p>Pick a quick game to play.</p>
+          </div>
+          <div class="game-list" id="game-list"></div>
+        </section>
+
+        <section class="game-stage" aria-labelledby="stage-title">
+          <div class="stage-topbar">
+            <div>
+              <p class="eyebrow">Play area</p>
+              <h2 id="stage-title">Choose a game</h2>
+            </div>
+            <button class="icon-button" id="home-button" type="button" aria-label="Return to game list" hidden>
+              <span aria-hidden="true">←</span>
+            </button>
+          </div>
+          <div class="stage-content" id="game-stage" tabindex="-1">
+            <p class="empty-state">Select a game from the list to get started.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

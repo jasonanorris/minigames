@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">MiniGames icon</title>
+  <rect width="512" height="512" rx="104" fill="#101820"/>
+  <circle cx="394" cy="118" r="46" fill="#3dd6d0"/>
+  <circle cx="118" cy="394" r="46" fill="#ff6b6b"/>
+  <rect x="114" y="114" width="284" height="284" rx="54" fill="#f7c948"/>
+  <path d="M170 326V186h48l38 62 38-62h48v140h-44v-74l-30 49h-24l-30-49v74h-44z" fill="#101820"/>
+</svg>
