@@ -21,6 +21,7 @@ Game progress and scores are stored locally in the browser. MiniGames does not s
 ## Current Games
 
 - Tap Race: tap as fast as you can before the 10-second timer ends.
+- Reaction Time: wait for green, then tap as quickly as possible.
 
 ## Local Development
 
@@ -44,6 +45,18 @@ Current lightweight checks:
 
 ```bash
 npm run check
+```
+
+Run the browser test suite:
+
+```bash
+npm test
+```
+
+The first test run may require the Chromium test browser:
+
+```bash
+npx playwright install chromium
 ```
 
 ## Privacy

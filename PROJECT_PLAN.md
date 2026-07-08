@@ -191,6 +191,13 @@ Validate the game registry and lifecycle with additional games.
 - [ ] Memory Grid
 - [ ] Quick Math
 
+## Automated Testing
+
+- [x] Check app navigation and mobile viewport fit
+- [x] Check manifest availability and service worker registration
+- [x] Check Tap Race timing, restart behavior, and saved best score
+- [x] Check Reaction Time early taps and saved best time
+
 ## Documentation and Trust
 
 Add repository documentation that explains the privacy posture in plain language.
