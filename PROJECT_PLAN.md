@@ -115,7 +115,7 @@ Create `manifest.json` with Android-friendly app metadata.
 
 Optional later experiment:
 
-- [ ] Try `display: fullscreen` for a more immersive game feel
+- [x] Try `display: fullscreen` for a more immersive game feel
 
 iPhone-friendly additions:
 
