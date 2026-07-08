@@ -24,12 +24,10 @@ function renderGameList() {
     button.className = "game-card";
     button.type = "button";
     button.dataset.gameId = game.id;
+    button.setAttribute("aria-label", game.title);
     button.innerHTML = `
-      <span>
-        <h3>${game.title}</h3>
-        <p>${game.description}</p>
-      </span>
-      <span class="badge">${game.status}</span>
+      <span class="game-card-mark" aria-hidden="true">${game.mark}</span>
+      <span class="game-card-title">${game.title}</span>
     `;
     button.addEventListener("click", () => selectGame(game));
     gameList.append(button);

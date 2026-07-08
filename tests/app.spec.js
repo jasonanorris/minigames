@@ -51,6 +51,24 @@ test("game theme colors update and return to the home theme", async ({ page }) =
   await expect(page.locator("html")).toHaveCSS("background-color", "rgb(16, 24, 32)");
 });
 
+test("game launcher uses four square tiles without section copy", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(page.getByText("Pick a quick game to play.")).toHaveCount(0);
+  const tileSizes = await page.locator(".game-card").evaluateAll((tiles) =>
+    tiles.map(({ offsetWidth, offsetHeight }) => ({
+      width: offsetWidth,
+      height: offsetHeight
+    }))
+  );
+
+  expect(tileSizes).toHaveLength(4);
+
+  for (const { width, height } of tileSizes) {
+    expect(Math.abs(width - height)).toBeLessThanOrEqual(1);
+  }
+});
+
 test("manifest and service worker are available", async ({ page, request }) => {
   const manifestResponse = await request.get("/manifest.json");
   expect(manifestResponse.ok()).toBe(true);
