@@ -187,10 +187,10 @@ Make the app feel finished on mobile.
 
 Add repository documentation that explains the privacy posture in plain language.
 
-- `README.md`: what MiniGames is, how to run it, and how to inspect it
-- `PRIVACY.md`: no personal data collection, no ads, no analytics, no third-party requests
-- `LICENSE`: open-source license, likely MIT unless we choose another
-- `CONTRIBUTING.md`: guidelines for keeping contributions privacy-preserving
+- [x] `README.md`: what MiniGames is, how to run it, and how to inspect it
+- [x] `PRIVACY.md`: no personal data collection, no ads, no analytics, no tracking services
+- [x] `LICENSE`: open-source license, likely MIT unless we choose another
+- [x] `CONTRIBUTING.md`: guidelines for keeping contributions privacy-preserving
 
 ## First Implementation Milestone
 
@@ -203,9 +203,9 @@ Create the complete app shell with:
 - `assets/js/app.js`
 - `assets/js/games/tap-race.js`
 - generated or hand-created app icons
-- `README.md`
-- `PRIVACY.md`
-- `LICENSE`
+- [x] `README.md`
+- [x] `PRIVACY.md`
+- [x] `LICENSE`
 
 At the end of this milestone, MiniGames should run locally, install as a PWA on Android, and include one playable mini game.
 
@@ -221,7 +221,7 @@ At the end of this milestone, MiniGames should run locally, install as a PWA on 
 - [ ] iPhone Safari Add to Home Screen behavior is reasonably supported
 - [x] Tap Race is playable
 - [x] Best score persists locally
-- [ ] No ads, analytics, trackers, telemetry, profiling, or personal data collection
-- [ ] Any third-party package or CDN use is documented
-- [ ] Source code is ready to publish on GitHub
-- [ ] Privacy model is documented
+- [x] No ads, analytics, trackers, telemetry, profiling, or personal data collection
+- [x] Any third-party package or CDN use is documented
+- [x] Source code is ready to publish on GitHub
+- [x] Privacy model is documented

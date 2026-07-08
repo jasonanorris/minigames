@@ -4,7 +4,6 @@ const gameList = document.querySelector("#game-list");
 const gameStage = document.querySelector("#game-stage");
 const stageTitle = document.querySelector("#stage-title");
 const homeButton = document.querySelector("#home-button");
-const appStatus = document.querySelector("#app-status");
 let activeCleanup = null;
 
 function renderGameList() {
@@ -61,19 +60,11 @@ function cleanupActiveGame() {
 
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) {
-    appStatus.textContent = "Browser";
     return;
   }
 
   window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("sw.js")
-      .then(() => {
-        appStatus.textContent = "PWA ready";
-      })
-      .catch(() => {
-        appStatus.textContent = "Ready";
-      });
+    navigator.serviceWorker.register("sw.js").catch(() => {});
   });
 }
 

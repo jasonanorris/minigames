@@ -96,6 +96,7 @@ p {
 
 h1 {
   margin-bottom: 0;
+  color: var(--text);
   font-size: clamp(2.2rem, 10vw, 4.8rem);
   line-height: 0.95;
 }
@@ -108,19 +109,6 @@ h2 {
 p {
   color: var(--muted);
   line-height: 1.5;
-}
-
-.status-pill {
-  flex: 0 0 auto;
-  min-width: 72px;
-  padding: 8px 11px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgba(23, 36, 45, 0.78);
-  color: var(--text);
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-align: center;
 }
 
 .app-main {
@@ -431,7 +419,6 @@ p {
     font-size: 1rem;
   }
 
-  .status-pill,
   .game-card .badge {
     min-height: 28px;
     padding: 5px 8px;
