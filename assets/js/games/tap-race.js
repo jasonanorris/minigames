@@ -113,12 +113,20 @@ export function startTapRace({ stage }) {
 }
 
 function readBestScore() {
-  const storedScore = window.localStorage.getItem(BEST_SCORE_KEY);
-  const score = Number.parseInt(storedScore || "0", 10);
+  try {
+    const storedScore = window.localStorage.getItem(BEST_SCORE_KEY);
+    const score = Number.parseInt(storedScore || "0", 10);
 
-  return Number.isFinite(score) ? score : 0;
+    return Number.isFinite(score) ? score : 0;
+  } catch {
+    return 0;
+  }
 }
 
 function writeBestScore(score) {
-  window.localStorage.setItem(BEST_SCORE_KEY, String(score));
+  try {
+    window.localStorage.setItem(BEST_SCORE_KEY, String(score));
+  } catch {
+    // Some browser privacy modes disable local storage. The game still works.
+  }
 }
