@@ -69,8 +69,11 @@ test("Memory Grid completes, saves its best, and starts a new board", async ({ p
   });
 
   for (const [firstId, secondId] of pairs) {
+    const pair = await page.locator(`[data-card-id="${firstId}"]`).getAttribute("data-pair");
     await page.locator(`[data-card-id="${firstId}"]`).click();
+    await expect(page.locator(`[data-card-id="${firstId}"]`)).not.toHaveClass(/is-activating/);
     await page.locator(`[data-card-id="${secondId}"]`).click();
+    await expect(page.locator(`[data-pair="${pair}"].is-matched`)).toHaveCount(2);
   }
 
   await expect(page.locator("#memory-pairs")).toHaveText("8 / 8");
@@ -105,7 +108,9 @@ test("Memory Grid cards stay the same size when revealed", async ({ page }) => {
   expect(sizesAfter).toEqual(sizesBefore);
 });
 
-test("Memory Grid pressed card grows without resizing its grid track", async ({ page }) => {
+test("Memory Grid quick tap plays the full animation without resizing its grid track", async ({
+  page
+}) => {
   await page.goto("/");
   await page.getByRole("button", { name: /Memory Grid/ }).click();
 
@@ -115,18 +120,19 @@ test("Memory Grid pressed card grows without resizing its grid track", async ({ 
     height: offsetHeight
   }));
 
-  await card.hover();
-  await page.mouse.down();
-  await page.waitForTimeout(130);
+  await card.click();
+  await expect(card).toHaveClass(/is-activating/);
+  await page.waitForTimeout(90);
 
-  const pressedState = await card.evaluate((element) => ({
+  const animatedState = await card.evaluate((element) => ({
     width: element.offsetWidth,
     height: element.offsetHeight,
     transform: getComputedStyle(element).transform
   }));
-  await page.mouse.up();
 
-  expect({ width: pressedState.width, height: pressedState.height }).toEqual(sizeBefore);
-  expect(pressedState.transform).not.toBe("none");
-  expect(pressedState.transform).not.toBe("matrix(1, 0, 0, 1, 0, 0)");
+  expect({ width: animatedState.width, height: animatedState.height }).toEqual(sizeBefore);
+  expect(animatedState.transform).not.toBe("none");
+  expect(animatedState.transform).not.toBe("matrix(1, 0, 0, 1, 0, 0)");
+  await expect(card).not.toHaveClass(/is-activating/);
+  await expect(card).toHaveClass(/is-revealed/);
 });

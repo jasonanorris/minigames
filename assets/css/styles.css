@@ -506,7 +506,6 @@ p {
   touch-action: manipulation;
   transform: scale(1);
   transform-origin: center;
-  transition: transform 120ms ease-out;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
@@ -516,9 +515,20 @@ p {
   outline-offset: 2px;
 }
 
-.memory-card:active:not(:disabled) {
+.memory-card.is-activating {
   z-index: 1;
-  transform: scale(1.08);
+  animation: memory-card-pop 180ms ease-out;
+}
+
+@keyframes memory-card-pop {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  55% {
+    transform: scale(1.08);
+  }
 }
 
 .memory-card.is-revealed {

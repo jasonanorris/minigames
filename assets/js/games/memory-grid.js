@@ -1,5 +1,6 @@
 const BEST_MOVES_KEY = "minigames.memoryGrid.bestMoves";
 const PAIRS = ["A", "B", "C", "D", "E", "F", "G", "H"];
+const CARD_ANIMATION_MS = 180;
 const MISMATCH_DELAY_MS = 700;
 
 export function startMemoryGrid({ stage }) {
@@ -8,6 +9,7 @@ export function startMemoryGrid({ stage }) {
   let matchedPairs = 0;
   let moves = 0;
   let isLocked = false;
+  let animationTimerId = null;
   let mismatchTimerId = null;
 
   stage.innerHTML = `
@@ -41,11 +43,14 @@ export function startMemoryGrid({ stage }) {
   const restartButton = stage.querySelector("#memory-restart");
 
   function startNewGame() {
+    window.clearTimeout(animationTimerId);
     window.clearTimeout(mismatchTimerId);
+    animationTimerId = null;
     mismatchTimerId = null;
     deck = shuffle([...PAIRS, ...PAIRS]).map((pair, index) => ({
       id: index,
       pair,
+      isAnimating: false,
       isMatched: false,
       isRevealed: false
     }));
@@ -78,6 +83,10 @@ export function startMemoryGrid({ stage }) {
         button.textContent = card.pair;
       }
 
+      if (card.isAnimating) {
+        button.classList.add("is-activating");
+      }
+
       if (card.isMatched) {
         button.classList.add("is-matched");
         button.disabled = true;
@@ -102,6 +111,18 @@ export function startMemoryGrid({ stage }) {
     }
 
     card.isRevealed = true;
+    card.isAnimating = true;
+    isLocked = true;
+    renderDeck();
+    animationTimerId = window.setTimeout(() => {
+      animationTimerId = null;
+      card.isAnimating = false;
+      isLocked = false;
+      resolveSelection(card);
+    }, CARD_ANIMATION_MS);
+  }
+
+  function resolveSelection(card) {
     renderDeck();
 
     if (firstCard === null) {
@@ -160,6 +181,7 @@ export function startMemoryGrid({ stage }) {
   startNewGame();
 
   return () => {
+    window.clearTimeout(animationTimerId);
     window.clearTimeout(mismatchTimerId);
     gridEl.removeEventListener("click", handleCardClick);
     restartButton.removeEventListener("click", startNewGame);
