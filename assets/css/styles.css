@@ -387,6 +387,80 @@ p {
   text-align: center;
 }
 
+.reaction-time {
+  display: grid;
+  width: min(34rem, 100%);
+  gap: 12px;
+}
+
+.reaction-stats {
+  display: grid;
+  min-height: 68px;
+  place-items: center;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-strong);
+}
+
+.reaction-stats strong {
+  font-size: clamp(1.45rem, 8vw, 2.5rem);
+  line-height: 1;
+}
+
+.reaction-target {
+  display: grid;
+  width: min(320px, 58dvh, 100%);
+  aspect-ratio: 1;
+  place-self: center;
+  place-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: var(--radius);
+  color: var(--text);
+  cursor: pointer;
+  text-align: center;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.reaction-target strong {
+  font-size: clamp(2rem, 12vw, 4rem);
+  line-height: 1;
+}
+
+.reaction-target span {
+  font-size: 0.9rem;
+  font-weight: 750;
+}
+
+.reaction-target:focus-visible {
+  outline: 4px solid rgba(247, 201, 72, 0.55);
+  outline-offset: 4px;
+}
+
+.reaction-target:active {
+  transform: scale(0.99);
+}
+
+.reaction-target.is-ready,
+.reaction-target.is-result {
+  background: var(--panel-strong);
+}
+
+.reaction-target.is-waiting {
+  background: #b63d3d;
+}
+
+.reaction-target.is-go {
+  background: #16845b;
+}
+
+.reaction-target.is-early {
+  background: #7e3547;
+}
+
 @media (min-width: 820px) {
   .app-shell {
     padding-top: 36px;
@@ -438,5 +512,9 @@ p {
 
   .tap-target {
     width: min(230px, 48dvh, 100%);
+  }
+
+  .reaction-target {
+    width: min(260px, 48dvh, 100%);
   }
 }

@@ -183,6 +183,14 @@ Make the app feel finished on mobile.
 - Optional install prompt button, implemented without tracking
 - Optional offline status indicator
 
+## Phase 8: More Games
+
+Validate the game registry and lifecycle with additional games.
+
+- [x] Reaction Time with randomized delay, early-tap detection, and local best time
+- [ ] Memory Grid
+- [ ] Quick Math
+
 ## Documentation and Trust
 
 Add repository documentation that explains the privacy posture in plain language.

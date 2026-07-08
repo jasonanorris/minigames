@@ -1,4 +1,5 @@
 import { startTapRace } from "./tap-race.js";
+import { startReactionTime } from "./reaction-time.js";
 
 export const games = [
   {
@@ -9,11 +10,11 @@ export const games = [
     start: startTapRace
   },
   {
-    id: "memory-grid",
-    title: "Memory Grid",
-    description: "Flip cards and match pairs with as few moves as possible.",
-    status: "Idea",
-    start: startComingSoonGame
+    id: "reaction-time",
+    title: "Reaction Time",
+    description: "Wait for green, then tap as quickly as you can.",
+    status: "Playable",
+    start: startReactionTime
   },
   {
     id: "quick-math",
