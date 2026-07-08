@@ -87,3 +87,20 @@ test("Memory Grid completes, saves its best, and starts a new board", async ({ p
   await expect(page.locator("#memory-best")).toHaveText("8");
   await expect(page.locator(".memory-card.is-revealed")).toHaveCount(0);
 });
+
+test("Memory Grid cards stay the same size when revealed", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /Memory Grid/ }).click();
+
+  const cards = page.locator(".memory-card");
+  const sizesBefore = await cards.evaluateAll((items) =>
+    items.map(({ offsetWidth, offsetHeight }) => ({ width: offsetWidth, height: offsetHeight }))
+  );
+
+  await cards.first().click();
+
+  const sizesAfter = await cards.evaluateAll((items) =>
+    items.map(({ offsetWidth, offsetHeight }) => ({ width: offsetWidth, height: offsetHeight }))
+  );
+  expect(sizesAfter).toEqual(sizesBefore);
+});
