@@ -75,7 +75,7 @@ button {
 
 .app-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   padding: 6px 0 12px;
@@ -235,6 +235,10 @@ p {
 .icon-button:hover {
   outline: none;
   border-color: var(--accent);
+}
+
+.refresh-button {
+  flex: 0 0 auto;
 }
 
 .stage-content {

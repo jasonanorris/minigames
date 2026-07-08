@@ -4,6 +4,7 @@ const gameList = document.querySelector("#game-list");
 const gameStage = document.querySelector("#game-stage");
 const stageTitle = document.querySelector("#stage-title");
 const homeButton = document.querySelector("#home-button");
+const refreshButton = document.querySelector("#refresh-button");
 let activeCleanup = null;
 let touchStartY = 0;
 
@@ -97,7 +98,19 @@ function preventPullToRefreshWhilePlaying() {
   );
 }
 
+async function refreshApp() {
+  if ("serviceWorker" in navigator) {
+    const registration = await navigator.serviceWorker.getRegistration();
+    await registration?.update();
+  }
+
+  window.location.reload();
+}
+
 homeButton.addEventListener("click", resetStage);
+refreshButton.addEventListener("click", () => {
+  refreshApp().catch(() => window.location.reload());
+});
 renderGameList();
 registerServiceWorker();
 preventPullToRefreshWhilePlaying();
