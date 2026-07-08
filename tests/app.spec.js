@@ -22,7 +22,7 @@ test("app shell fits a mobile viewport and opens and closes games", async ({ pag
 
   await page.getByRole("button", { name: "Return to game list" }).click();
   await expect(page.locator("body")).not.toHaveClass(/is-playing/);
-  await expect(page.getByText("Select a game from the list")).toBeVisible();
+  await expect(page.locator(".game-library")).toBeVisible();
 });
 
 test("displayed version matches the app version module", async ({ page }) => {
@@ -51,7 +51,7 @@ test("game theme colors update and return to the home theme", async ({ page }) =
   await expect(page.locator("html")).toHaveCSS("background-color", "rgb(16, 24, 32)");
 });
 
-test("game launcher uses four square tiles without section copy", async ({ page }) => {
+test("game launcher uses square tiles and marks placeholders unavailable", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByText("Pick a quick game to play.")).toHaveCount(0);
@@ -62,11 +62,14 @@ test("game launcher uses four square tiles without section copy", async ({ page 
     }))
   );
 
-  expect(tileSizes).toHaveLength(4);
+  expect(tileSizes).toHaveLength(14);
 
   for (const { width, height } of tileSizes) {
     expect(Math.abs(width - height)).toBeLessThanOrEqual(1);
   }
+
+  await expect(page.locator(".game-card.is-placeholder")).toHaveCount(10);
+  await expect(page.getByRole("button", { name: "Snake, coming soon" })).toBeDisabled();
 });
 
 test("manifest and service worker are available", async ({ page, request }) => {

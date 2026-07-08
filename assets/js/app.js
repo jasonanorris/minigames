@@ -24,12 +24,27 @@ function renderGameList() {
     button.className = "game-card";
     button.type = "button";
     button.dataset.gameId = game.id;
-    button.setAttribute("aria-label", game.title);
+    const isPlayable = typeof game.start === "function";
+    button.disabled = !isPlayable;
+    button.setAttribute(
+      "aria-label",
+      isPlayable ? game.title : `${game.title}, coming soon`
+    );
+    button.title = isPlayable ? game.title : `${game.title} - coming soon`;
+
+    if (!isPlayable) {
+      button.classList.add("is-placeholder");
+    }
+
     button.innerHTML = `
       <span class="game-card-mark" aria-hidden="true">${game.mark}</span>
       <span class="game-card-title">${game.title}</span>
     `;
-    button.addEventListener("click", () => selectGame(game));
+
+    if (isPlayable) {
+      button.addEventListener("click", () => selectGame(game));
+    }
+
     gameList.append(button);
   }
 }

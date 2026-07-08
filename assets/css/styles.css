@@ -182,7 +182,7 @@ p {
 }
 
 .game-card:focus-visible,
-.game-card:hover {
+.game-card:hover:not(:disabled) {
   outline: none;
   border-color: var(--accent);
   background: #263a45;
@@ -206,6 +206,18 @@ p {
 
 .game-card:nth-child(4) .game-card-mark {
   color: var(--cyan);
+}
+
+.game-card.is-placeholder {
+  border-color: rgba(43, 65, 75, 0.7);
+  background: rgba(32, 50, 61, 0.58);
+  color: var(--muted);
+  cursor: default;
+  opacity: 0.62;
+}
+
+.game-card.is-placeholder .game-card-mark {
+  color: var(--muted);
 }
 
 .game-card-title {
@@ -664,6 +676,20 @@ p {
 
   .stage-content {
     min-height: 0;
+  }
+}
+
+@media (max-width: 819px) {
+  .app-main {
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .game-stage {
+    display: none;
+  }
+
+  .is-playing .game-stage {
+    display: grid;
   }
 }
 

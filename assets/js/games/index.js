@@ -3,6 +3,24 @@ import { startReactionTime } from "./reaction-time.js";
 import { startMemoryGrid } from "./memory-grid.js";
 import { startQuickMath } from "./quick-math.js";
 
+const placeholderGames = [
+  { id: "snake", title: "Snake", mark: "S" },
+  { id: "tic-tac-toe", title: "Tic Tac Toe", mark: "XO" },
+  { id: "simon", title: "Simon", mark: "1234" },
+  { id: "word-mix", title: "Word Mix", mark: "ABC" },
+  { id: "mines", title: "Mines", mark: "!" },
+  { id: "number-merge", title: "2048", mark: "2048" },
+  { id: "color-match", title: "Color Match", mark: "RGB" },
+  { id: "maze", title: "Maze", mark: "->" },
+  { id: "breakout", title: "Breakout", mark: "|||" },
+  { id: "dice-roll", title: "Dice Roll", mark: "D6" }
+].map((game) => ({
+  ...game,
+  description: "Coming soon.",
+  status: "Coming soon",
+  start: null
+}));
+
 export const games = [
   {
     id: "tap-race",
@@ -55,5 +73,6 @@ export const games = [
       tintSecondary: "rgba(247, 201, 72, 0.1)"
     },
     start: startQuickMath
-  }
+  },
+  ...placeholderGames
 ];
