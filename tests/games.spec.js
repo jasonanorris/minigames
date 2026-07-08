@@ -104,3 +104,29 @@ test("Memory Grid cards stay the same size when revealed", async ({ page }) => {
   );
   expect(sizesAfter).toEqual(sizesBefore);
 });
+
+test("Memory Grid pressed card grows without resizing its grid track", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /Memory Grid/ }).click();
+
+  const card = page.locator(".memory-card").first();
+  const sizeBefore = await card.evaluate(({ offsetWidth, offsetHeight }) => ({
+    width: offsetWidth,
+    height: offsetHeight
+  }));
+
+  await card.hover();
+  await page.mouse.down();
+  await page.waitForTimeout(130);
+
+  const pressedState = await card.evaluate((element) => ({
+    width: element.offsetWidth,
+    height: element.offsetHeight,
+    transform: getComputedStyle(element).transform
+  }));
+  await page.mouse.up();
+
+  expect({ width: pressedState.width, height: pressedState.height }).toEqual(sizeBefore);
+  expect(pressedState.transform).not.toBe("none");
+  expect(pressedState.transform).not.toBe("matrix(1, 0, 0, 1, 0, 0)");
+});

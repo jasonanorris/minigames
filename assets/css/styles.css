@@ -487,6 +487,7 @@ p {
 
 .memory-card {
   display: grid;
+  position: relative;
   width: 100%;
   height: 100%;
   min-width: 0;
@@ -503,6 +504,9 @@ p {
   font-size: clamp(1.25rem, 8vw, 2.4rem);
   font-weight: 900;
   touch-action: manipulation;
+  transform: scale(1);
+  transform-origin: center;
+  transition: transform 120ms ease-out;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
@@ -510,6 +514,11 @@ p {
 .memory-card:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
+}
+
+.memory-card:active:not(:disabled) {
+  z-index: 1;
+  transform: scale(1.08);
 }
 
 .memory-card.is-revealed {
