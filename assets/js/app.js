@@ -5,6 +5,7 @@ const gameStage = document.querySelector("#game-stage");
 const stageTitle = document.querySelector("#stage-title");
 const homeButton = document.querySelector("#home-button");
 let activeCleanup = null;
+let touchStartY = 0;
 
 function renderGameList() {
   gameList.innerHTML = "";
@@ -68,6 +69,35 @@ function registerServiceWorker() {
   });
 }
 
+function preventPullToRefreshWhilePlaying() {
+  window.addEventListener(
+    "touchstart",
+    (event) => {
+      touchStartY = event.touches[0]?.clientY || 0;
+    },
+    { passive: true }
+  );
+
+  window.addEventListener(
+    "touchmove",
+    (event) => {
+      if (!document.body.classList.contains("is-playing")) {
+        return;
+      }
+
+      const touchY = event.touches[0]?.clientY || 0;
+      const isPullingDown = touchY > touchStartY;
+      const isAtTop = window.scrollY <= 0;
+
+      if (isPullingDown && isAtTop) {
+        event.preventDefault();
+      }
+    },
+    { passive: false }
+  );
+}
+
 homeButton.addEventListener("click", resetStage);
 renderGameList();
 registerServiceWorker();
+preventPullToRefreshWhilePlaying();
