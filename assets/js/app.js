@@ -29,6 +29,7 @@ function renderGameList() {
 
 function selectGame(game) {
   cleanupActiveGame();
+  document.body.classList.add("is-playing");
   stageTitle.textContent = game.title;
   homeButton.hidden = false;
   gameStage.innerHTML = "";
@@ -45,6 +46,7 @@ function selectGame(game) {
 
 function resetStage() {
   cleanupActiveGame();
+  document.body.classList.remove("is-playing");
   stageTitle.textContent = "Choose a game";
   homeButton.hidden = true;
   gameStage.innerHTML = '<p class="empty-state">Select a game from the list to get started.</p>';
