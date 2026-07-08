@@ -55,6 +55,9 @@ test("game launcher uses square tiles and marks placeholders unavailable", async
   await page.goto("/");
 
   await expect(page.getByText("Pick a quick game to play.")).toHaveCount(0);
+  const columnCount = await page.locator(".game-list").evaluate((list) =>
+    getComputedStyle(list).gridTemplateColumns.split(" ").length
+  );
   const tileSizes = await page.locator(".game-card").evaluateAll((tiles) =>
     tiles.map(({ offsetWidth, offsetHeight }) => ({
       width: offsetWidth,
@@ -62,6 +65,7 @@ test("game launcher uses square tiles and marks placeholders unavailable", async
     }))
   );
 
+  expect(columnCount).toBe(4);
   expect(tileSizes).toHaveLength(14);
 
   for (const { width, height } of tileSizes) {
