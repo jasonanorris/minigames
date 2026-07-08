@@ -136,3 +136,53 @@ test("Memory Grid quick tap plays the full animation without resizing its grid t
   await expect(card).not.toHaveClass(/is-activating/);
   await expect(card).toHaveClass(/is-revealed/);
 });
+
+test("Quick Math scores answers, saves its best, and restarts", async ({ page }) => {
+  await page.clock.install();
+  await page.goto("/");
+  await page.getByRole("button", { name: /Quick Math/ }).click();
+
+  const correctAnswer = await readMathAnswer(page);
+  await page.getByRole("button", { name: String(correctAnswer), exact: true }).click();
+  await expect(page.locator("#math-score")).toHaveText("1");
+  await expect(page.locator("#math-message")).toHaveText("Correct.");
+
+  const nextAnswer = await readMathAnswer(page);
+  const wrongButton = page.locator(".math-answer").filter({
+    hasNotText: new RegExp(`^${nextAnswer}$`)
+  }).first();
+  await wrongButton.click();
+  await expect(page.locator("#math-score")).toHaveText("1");
+  await expect(page.locator("#math-message")).toHaveText(`The answer was ${nextAnswer}.`);
+
+  await page.clock.runFor(30000);
+  await expect(page.locator("#math-time")).toHaveText("0");
+  await expect(page.locator("#math-message")).toHaveText("New best: 1.");
+  await expect(page.locator(".math-answer:disabled")).toHaveCount(4);
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem("minigames.quickMath.bestScore")))
+    .toBe("1");
+
+  await page.getByRole("button", { name: "Restart" }).click();
+  await expect(page.locator("#math-score")).toHaveText("0");
+  await expect(page.locator("#math-time")).toHaveText("30");
+  await expect(page.locator("#math-best")).toHaveText("1");
+  await expect(page.locator(".math-answer:enabled")).toHaveCount(4);
+});
+
+async function readMathAnswer(page) {
+  const expression = await page.locator("#math-question").textContent();
+  const [left, operator, right] = expression.split(" ");
+  const first = Number(left);
+  const second = Number(right);
+
+  if (operator === "+") {
+    return first + second;
+  }
+
+  if (operator === "-") {
+    return first - second;
+  }
+
+  return first * second;
+}

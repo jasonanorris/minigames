@@ -584,6 +584,63 @@ p {
   cursor: default;
 }
 
+.quick-math {
+  display: grid;
+  width: min(34rem, 100%);
+  gap: 12px;
+}
+
+.math-question {
+  display: grid;
+  min-height: 112px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-strong);
+  color: var(--text);
+  font-size: clamp(2.4rem, 14vw, 5rem);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.math-answers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(72px, 1fr));
+  gap: 8px;
+}
+
+.math-answer {
+  min-width: 0;
+  min-height: 72px;
+  border: 1px solid #46606c;
+  border-radius: var(--radius);
+  background: #25404c;
+  color: var(--text);
+  cursor: pointer;
+  font-size: clamp(1.5rem, 8vw, 2.5rem);
+  font-weight: 850;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.math-answer:focus-visible,
+.math-answer:hover {
+  outline: none;
+  border-color: var(--accent);
+  background: #2d4c58;
+}
+
+.math-answer:active:not(:disabled) {
+  background: var(--cyan);
+  color: #071817;
+}
+
+.math-answer:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 @media (min-width: 820px) {
   .app-shell {
     padding-top: 36px;

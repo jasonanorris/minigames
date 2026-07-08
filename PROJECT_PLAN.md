@@ -189,7 +189,7 @@ Validate the game registry and lifecycle with additional games.
 
 - [x] Reaction Time with randomized delay, early-tap detection, and local best time
 - [x] Memory Grid with shuffled pairs, move counting, and local best score
-- [ ] Quick Math
+- [x] Quick Math with timed questions, streaks, rising difficulty, and local best score
 
 ## Automated Testing
 
@@ -198,6 +198,7 @@ Validate the game registry and lifecycle with additional games.
 - [x] Check Tap Race timing, restart behavior, and saved best score
 - [x] Check Reaction Time early taps and saved best time
 - [x] Check Memory Grid matching, restart behavior, and saved best score
+- [x] Check Quick Math scoring, timer, restart behavior, and saved best score
 
 ## Documentation and Trust
 

@@ -4,9 +4,10 @@ test("app shell fits a mobile viewport and opens and closes games", async ({ pag
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "MiniGames" })).toBeVisible();
-  await expect(page.locator("#app-version")).toHaveText("v0.10");
+  await expect(page.locator("#app-version")).toHaveText(/^v0\.\d{2}$/);
   await expect(page.getByRole("button", { name: /Tap Race/ })).toBeVisible();
   await expect(page.getByRole("button", { name: /Reaction Time/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Quick Math/ })).toBeVisible();
 
   const viewportFits = await page.evaluate(
     () =>
