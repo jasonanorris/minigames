@@ -179,7 +179,7 @@ Make the app feel finished on mobile.
 - Touch-friendly controls
 - Stable layout during gameplay
 - Safe-area handling for modern phones
-- App-like background and theme colors
+- [x] App-like background and theme colors, including per-game system theme tinting
 - Optional install prompt button, implemented without tracking
 - Optional offline status indicator
 

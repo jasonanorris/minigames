@@ -1,11 +1,17 @@
 import { games } from "./games/index.js";
 import { APP_VERSION } from "./version.js";
 
+const HOME_THEME = {
+  color: "#101820",
+  tint: "rgba(61, 214, 208, 0.14)",
+  tintSecondary: "rgba(247, 201, 72, 0.16)"
+};
 const gameList = document.querySelector("#game-list");
 const gameStage = document.querySelector("#game-stage");
 const stageTitle = document.querySelector("#stage-title");
 const homeButton = document.querySelector("#home-button");
 const refreshButton = document.querySelector("#refresh-button");
+const themeColorMeta = document.querySelector("#theme-color");
 const versionEl = document.querySelector("#app-version");
 let activeCleanup = null;
 let touchStartY = 0;
@@ -32,6 +38,7 @@ function renderGameList() {
 
 function selectGame(game) {
   cleanupActiveGame();
+  applyTheme(game.theme);
   document.body.classList.add("is-playing");
   stageTitle.textContent = game.title;
   homeButton.hidden = false;
@@ -49,10 +56,22 @@ function selectGame(game) {
 
 function resetStage() {
   cleanupActiveGame();
+  applyTheme(HOME_THEME);
   document.body.classList.remove("is-playing");
   stageTitle.textContent = "Choose a game";
   homeButton.hidden = true;
   gameStage.innerHTML = '<p class="empty-state">Select a game from the list to get started.</p>';
+}
+
+function applyTheme(theme) {
+  const activeTheme = theme || HOME_THEME;
+  document.documentElement.style.setProperty("--theme-color", activeTheme.color);
+  document.documentElement.style.setProperty("--theme-tint", activeTheme.tint);
+  document.documentElement.style.setProperty(
+    "--theme-tint-secondary",
+    activeTheme.tintSecondary
+  );
+  themeColorMeta.content = activeTheme.color;
 }
 
 function cleanupActiveGame() {
@@ -114,6 +133,7 @@ refreshButton.addEventListener("click", () => {
   refreshApp().catch(() => window.location.reload());
 });
 versionEl.textContent = `v${APP_VERSION}`;
+applyTheme(HOME_THEME);
 renderGameList();
 registerServiceWorker();
 preventPullToRefreshWhilePlaying();

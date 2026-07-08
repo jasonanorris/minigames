@@ -36,6 +36,21 @@ test("displayed version matches the app version module", async ({ page }) => {
   await expect(page.locator("#app-version")).toHaveText(`v${moduleVersion}`);
 });
 
+test("game theme colors update and return to the home theme", async ({ page }) => {
+  await page.goto("/");
+
+  const themeMeta = page.locator("#theme-color");
+  await expect(themeMeta).toHaveAttribute("content", "#101820");
+
+  await page.getByRole("button", { name: /Memory Grid/ }).click();
+  await expect(themeMeta).toHaveAttribute("content", "#181c2a");
+  await expect(page.locator("html")).toHaveCSS("background-color", "rgb(24, 28, 42)");
+
+  await page.getByRole("button", { name: "Return to game list" }).click();
+  await expect(themeMeta).toHaveAttribute("content", "#101820");
+  await expect(page.locator("html")).toHaveCSS("background-color", "rgb(16, 24, 32)");
+});
+
 test("manifest and service worker are available", async ({ page, request }) => {
   const manifestResponse = await request.get("/manifest.json");
   expect(manifestResponse.ok()).toBe(true);
