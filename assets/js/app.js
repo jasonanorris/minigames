@@ -1,10 +1,12 @@
 import { games } from "./games/index.js";
+import { APP_VERSION } from "./version.js";
 
 const gameList = document.querySelector("#game-list");
 const gameStage = document.querySelector("#game-stage");
 const stageTitle = document.querySelector("#stage-title");
 const homeButton = document.querySelector("#home-button");
 const refreshButton = document.querySelector("#refresh-button");
+const versionEl = document.querySelector("#app-version");
 let activeCleanup = null;
 let touchStartY = 0;
 
@@ -111,6 +113,7 @@ homeButton.addEventListener("click", resetStage);
 refreshButton.addEventListener("click", () => {
   refreshApp().catch(() => window.location.reload());
 });
+versionEl.textContent = `v${APP_VERSION}`;
 renderGameList();
 registerServiceWorker();
 preventPullToRefreshWhilePlaying();

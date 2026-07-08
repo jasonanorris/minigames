@@ -60,3 +60,13 @@ node --check sw.js
 ```
 
 Also check that `manifest.json` remains valid JSON.
+
+## Versions
+
+Before every push that changes the deployed app, bump the visible version by one hundredth:
+
+```bash
+npm run version:bump
+```
+
+This keeps the displayed version, package metadata, and service-worker cache version in sync.

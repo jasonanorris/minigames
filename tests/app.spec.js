@@ -4,6 +4,7 @@ test("app shell fits a mobile viewport and opens and closes games", async ({ pag
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "MiniGames" })).toBeVisible();
+  await expect(page.locator("#app-version")).toHaveText("v0.10");
   await expect(page.getByRole("button", { name: /Tap Race/ })).toBeVisible();
   await expect(page.getByRole("button", { name: /Reaction Time/ })).toBeVisible();
 
@@ -21,6 +22,17 @@ test("app shell fits a mobile viewport and opens and closes games", async ({ pag
   await page.getByRole("button", { name: "Return to game list" }).click();
   await expect(page.locator("body")).not.toHaveClass(/is-playing/);
   await expect(page.getByText("Select a game from the list")).toBeVisible();
+});
+
+test("displayed version matches the app version module", async ({ page }) => {
+  await page.goto("/");
+
+  const moduleVersion = await page.evaluate(async () => {
+    const { APP_VERSION } = await import("/assets/js/version.js");
+    return APP_VERSION;
+  });
+
+  await expect(page.locator("#app-version")).toHaveText(`v${moduleVersion}`);
 });
 
 test("manifest and service worker are available", async ({ page, request }) => {

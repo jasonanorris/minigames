@@ -81,6 +81,20 @@ button {
   padding: 6px 0 12px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-version {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
 .eyebrow {
   margin: 0 0 6px;
   color: var(--cyan);
