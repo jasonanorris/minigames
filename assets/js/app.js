@@ -14,9 +14,14 @@ const networkStatusEl = document.querySelector("#network-status");
 const refreshButton = document.querySelector("#refresh-button");
 const themeColorMeta = document.querySelector("#theme-color");
 const versionEl = document.querySelector("#app-version");
+const gameLibrary = document.querySelector(".game-library");
+const LAUNCH_ANIMATION_MS = 220;
 let activeCleanup = null;
 let hadServiceWorkerController = false;
 let isReloadingForUpdate = false;
+let isLaunchingGame = false;
+let lastLauncherGameId = null;
+let launcherScrollTop = 0;
 let reloadOnControllerChange = false;
 let serviceWorkerRegistration = null;
 let touchStartY = 0;
@@ -47,14 +52,36 @@ function renderGameList() {
     `;
 
     if (isPlayable) {
-      button.addEventListener("click", () => selectGame(game));
+      button.addEventListener("click", () => launchGame(game, button));
     }
 
     gameList.append(button);
   }
 }
 
+function launchGame(game, button) {
+  if (isLaunchingGame) {
+    return;
+  }
+
+  isLaunchingGame = true;
+  lastLauncherGameId = game.id;
+  launcherScrollTop = gameLibrary.scrollTop;
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    selectGame(game);
+    return;
+  }
+
+  button.classList.add("is-launching");
+  window.setTimeout(() => selectGame(game), LAUNCH_ANIMATION_MS);
+}
+
 function selectGame(game, { updateHistory = true } = {}) {
+  isLaunchingGame = false;
+  lastLauncherGameId = game.id;
+  gameList.querySelector(".is-launching")?.classList.remove("is-launching");
+
   if (updateHistory) {
     const method = history.state?.view === "game" ? "replaceState" : "pushState";
     history[method]({ view: "game", gameId: game.id }, "", window.location.href);
@@ -109,6 +136,13 @@ function resetStage() {
   stageTitle.textContent = "Choose a game";
   homeButton.hidden = true;
   gameStage.innerHTML = '<p class="empty-state">Select a game from the list to get started.</p>';
+
+  window.requestAnimationFrame(() => {
+    gameList
+      .querySelector(`[data-game-id="${lastLauncherGameId}"]`)
+      ?.focus({ preventScroll: true });
+    gameLibrary.scrollTop = launcherScrollTop;
+  });
 }
 
 function applyTheme(theme) {

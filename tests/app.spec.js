@@ -87,6 +87,47 @@ test("browser history moves between the launcher and a game", async ({ page }) =
   await expect(page.locator("body")).not.toHaveClass(/is-playing/);
 });
 
+test("selected tile animates without shifting the launcher grid", async ({ page }) => {
+  await page.goto("/");
+
+  const tile = page.getByRole("button", { name: "Tap Race", exact: true });
+  const before = await tile.boundingBox();
+  await tile.click();
+
+  await expect(tile).toHaveClass(/is-launching/);
+  const during = await tile.boundingBox();
+  expect(before).not.toBeNull();
+  expect(during).not.toBeNull();
+  expect(Math.abs(before.x - during.x)).toBeLessThan(4);
+  expect(Math.abs(before.y - during.y)).toBeLessThan(4);
+  await expect(page.locator("body")).toHaveClass(/is-playing/);
+});
+
+test("launcher restores its scroll position and selected tile focus", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 320 });
+  await page.goto("/");
+
+  const savedScrollTop = await page.locator(".game-library").evaluate((library) => {
+    library.scrollTop = library.scrollHeight;
+    return library.scrollTop;
+  });
+  expect(savedScrollTop).toBeGreaterThan(0);
+
+  await page.locator('[data-game-id="tap-race"]').evaluate((tile) => tile.click());
+  await expect(page.locator("body")).toHaveClass(/is-playing/);
+  await page.goBack();
+  await expect(page.locator("body")).not.toHaveClass(/is-playing/);
+
+  await expect
+    .poll(() => page.locator(".game-library").evaluate((library) => library.scrollTop))
+    .toBe(savedScrollTop);
+  await expect
+    .poll(() =>
+      page.evaluate(() => document.activeElement?.dataset.gameId || null)
+    )
+    .toBe("tap-race");
+});
+
 test("displayed version matches the app version module", async ({ page }) => {
   await page.goto("/");
 

@@ -5,7 +5,7 @@ test("Tap Race starts, scores, restarts, and reads the saved best", async ({ pag
     localStorage.setItem("minigames.tapRace.bestScore", "12");
   });
   await page.goto("/");
-  await page.getByRole("button", { name: /Tap Race/ }).click();
+  await launchGame(page, "Tap Race");
 
   await expect(page.locator("#tap-best")).toHaveText("12");
   await page.locator("#tap-target").click();
@@ -21,7 +21,7 @@ test("Tap Race starts, scores, restarts, and reads the saved best", async ({ pag
 
 test("Reaction Time handles early taps", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: /Reaction Time/ }).click();
+  await launchGame(page, "Reaction Time");
 
   const target = page.locator("#reaction-target");
   await target.click();
@@ -34,7 +34,7 @@ test("Reaction Time handles early taps", async ({ page }) => {
 
 test("Reaction Time records and reloads a best time", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: /Reaction Time/ }).click();
+  await launchGame(page, "Reaction Time");
 
   const target = page.locator("#reaction-target");
   await target.click();
@@ -49,13 +49,13 @@ test("Reaction Time records and reloads a best time", async ({ page }) => {
   expect(Number(savedBest)).toBeGreaterThan(0);
 
   await page.reload();
-  await page.getByRole("button", { name: /Reaction Time/ }).click();
+  await expect(page.locator("body")).toHaveClass(/is-playing/);
   await expect(page.locator("#reaction-best")).toHaveText(`${savedBest} ms`);
 });
 
 test("Memory Grid completes, saves its best, and starts a new board", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: /Memory Grid/ }).click();
+  await launchGame(page, "Memory Grid");
 
   const pairs = await page.locator(".memory-card").evaluateAll((cards) => {
     const groupedCards = {};
@@ -93,7 +93,7 @@ test("Memory Grid completes, saves its best, and starts a new board", async ({ p
 
 test("Memory Grid cards stay the same size when revealed", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: /Memory Grid/ }).click();
+  await launchGame(page, "Memory Grid");
 
   const cards = page.locator(".memory-card");
   const sizesBefore = await cards.evaluateAll((items) =>
@@ -112,7 +112,7 @@ test("Memory Grid quick tap plays the full animation without resizing its grid t
   page
 }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: /Memory Grid/ }).click();
+  await launchGame(page, "Memory Grid");
 
   const card = page.locator(".memory-card").first();
   const sizeBefore = await card.evaluate(({ offsetWidth, offsetHeight }) => ({
@@ -140,7 +140,7 @@ test("Memory Grid quick tap plays the full animation without resizing its grid t
 test("Quick Math scores answers, saves its best, and restarts", async ({ page }) => {
   await page.clock.install();
   await page.goto("/");
-  await page.getByRole("button", { name: /Quick Math/ }).click();
+  await launchGame(page, "Quick Math");
 
   const correctAnswer = await readMathAnswer(page);
   await page.getByRole("button", { name: String(correctAnswer), exact: true }).click();
@@ -169,6 +169,11 @@ test("Quick Math scores answers, saves its best, and restarts", async ({ page })
   await expect(page.locator("#math-best")).toHaveText("1");
   await expect(page.locator(".math-answer:enabled")).toHaveCount(4);
 });
+
+async function launchGame(page, name) {
+  await page.getByRole("button", { name, exact: true }).click();
+  await expect(page.locator("body")).toHaveClass(/is-playing/);
+}
 
 async function readMathAnswer(page) {
   const expression = await page.locator("#math-question").textContent();

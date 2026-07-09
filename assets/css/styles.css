@@ -167,7 +167,10 @@ p {
 .game-library {
   padding: 12px;
   overflow: auto;
+  overscroll-behavior: contain;
   scrollbar-width: none;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 .game-list {
@@ -192,7 +195,9 @@ p {
   color: var(--text);
   text-align: center;
   cursor: pointer;
+  touch-action: manipulation;
   transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .game-card:focus-visible,
@@ -201,6 +206,28 @@ p {
   border-color: var(--accent);
   background: #263a45;
   transform: translateY(-1px);
+}
+
+.game-card.is-launching {
+  z-index: 1;
+  border-color: var(--cyan);
+  background: #2b4650;
+  animation: game-card-launch 220ms ease-out both;
+  box-shadow: 0 0 0 3px rgba(61, 214, 208, 0.2), 0 8px 20px rgba(0, 0, 0, 0.22);
+}
+
+@keyframes game-card-launch {
+  0% {
+    transform: scale(1);
+  }
+
+  38% {
+    transform: scale(0.94);
+  }
+
+  100% {
+    transform: scale(1.04);
+  }
 }
 
 .game-card-mark {
@@ -769,5 +796,15 @@ p {
 
   .memory-grid {
     width: min(360px, 43dvh, 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-card {
+    transition: none;
+  }
+
+  .game-card.is-launching {
+    animation: none;
   }
 }
