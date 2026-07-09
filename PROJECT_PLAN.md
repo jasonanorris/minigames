@@ -186,6 +186,8 @@ Make the app feel finished on mobile.
 - [x] Preserve launcher scroll position and selected-game focus after returning
 - [x] Add touch feedback to game tiles without shifting the launcher grid
 - [x] Add contained momentum scrolling for the launcher on mobile
+- [x] Support portrait and landscape orientation
+- [x] Pause timed games when the app is backgrounded or the screen locks
 - Optional install prompt button, implemented without tracking
 - [x] Offline status indicator using browser connectivity events without probes
 

@@ -44,6 +44,33 @@ test("compact header fits a narrow phone without overlap", async ({ page }) => {
   expect(fitsViewport).toBe(true);
 });
 
+test("launcher and game adapt to phone rotation and viewport height changes", async ({
+  page
+}) => {
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.goto("/");
+
+  await expect(page.locator(".game-library")).toBeVisible();
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)
+  ).toBe(true);
+
+  await page.getByRole("button", { name: "Quick Math", exact: true }).click();
+  await expect(page.locator("body")).toHaveClass(/is-playing/);
+  await expect(page.locator("#math-answers")).toBeVisible();
+
+  await page.setViewportSize({ width: 390, height: 700 });
+  await expect(page.locator("#math-answers")).toBeVisible();
+  expect(
+    await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth <= window.innerWidth &&
+        document.querySelector(".app-shell").getBoundingClientRect().height <=
+          window.innerHeight
+    )
+  ).toBe(true);
+});
+
 test("connectivity indicator follows browser online and offline events", async ({
   context,
   page
@@ -202,6 +229,7 @@ test("manifest and service worker are available", async ({ page, request }) => {
   const serviceWorker = await serviceWorkerResponse.text();
   expect(manifest.name).toBe("MiniGames");
   expect(manifest.display).toBe("fullscreen");
+  expect(manifest.orientation).toBe("any");
   expect(serviceWorker).toContain('self.addEventListener("message"');
   expect(serviceWorker).toContain('event.data?.type === "SKIP_WAITING"');
   expect(serviceWorker).toContain("hasLegacyCache");

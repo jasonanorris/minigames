@@ -19,6 +19,8 @@ const LAUNCH_ANIMATION_MS = 220;
 const LAUNCHER_STATE = { view: "launcher", guarded: true };
 const LAUNCHER_BOUNDARY_STATE = { view: "launcher-boundary" };
 let activeCleanup = null;
+let activePause = null;
+let activeResume = null;
 let hadServiceWorkerController = false;
 let isReloadingForUpdate = false;
 let isLaunchingGame = false;
@@ -96,13 +98,20 @@ function selectGame(game, { updateHistory = true } = {}) {
   homeButton.hidden = false;
   gameStage.innerHTML = "";
 
-  const cleanup = game.start({
+  const lifecycle = game.start({
     game,
     stage: gameStage,
     resetStage
   });
 
-  activeCleanup = typeof cleanup === "function" ? cleanup : null;
+  if (typeof lifecycle === "function") {
+    activeCleanup = lifecycle;
+  } else {
+    activeCleanup = lifecycle?.cleanup || null;
+    activePause = lifecycle?.pause || null;
+    activeResume = lifecycle?.resume || null;
+  }
+
   gameStage.focus();
 }
 
@@ -179,6 +188,18 @@ function cleanupActiveGame() {
     activeCleanup();
     activeCleanup = null;
   }
+
+  activePause = null;
+  activeResume = null;
+}
+
+function handleVisibilityChange() {
+  if (document.visibilityState === "hidden") {
+    activePause?.();
+    return;
+  }
+
+  activeResume?.();
 }
 
 function registerServiceWorker() {
@@ -323,6 +344,7 @@ refreshButton.addEventListener("click", () => {
 window.addEventListener("online", updateNetworkStatus);
 window.addEventListener("offline", updateNetworkStatus);
 window.addEventListener("popstate", handlePopState);
+document.addEventListener("visibilitychange", handleVisibilityChange);
 versionEl.textContent = `v${APP_VERSION}`;
 updateNetworkStatus();
 applyTheme(HOME_THEME);

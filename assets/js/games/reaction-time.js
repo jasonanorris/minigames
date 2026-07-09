@@ -5,6 +5,8 @@ const MAX_WAIT_MS = 4000;
 export function startReactionTime({ stage }) {
   let state = "ready";
   let waitTimerId = null;
+  let waitTimeRemaining = 0;
+  let waitTimeStarted = 0;
   let signalTime = 0;
 
   stage.innerHTML = `
@@ -37,11 +39,14 @@ export function startReactionTime({ stage }) {
     messageEl.textContent = "Watch for green.";
 
     const delay = MIN_WAIT_MS + Math.random() * (MAX_WAIT_MS - MIN_WAIT_MS);
+    waitTimeRemaining = delay;
+    waitTimeStarted = performance.now();
     waitTimerId = window.setTimeout(showSignal, delay);
   }
 
   function showSignal() {
     waitTimerId = null;
+    waitTimeRemaining = 0;
     state = "go";
     signalTime = performance.now();
     targetButton.className = "reaction-target is-go";
@@ -87,9 +92,48 @@ export function startReactionTime({ stage }) {
   targetButton.addEventListener("click", handleTargetTap);
   targetButton.focus();
 
-  return () => {
-    window.clearTimeout(waitTimerId);
-    targetButton.removeEventListener("click", handleTargetTap);
+  return {
+    pause() {
+      if (state === "waiting") {
+        window.clearTimeout(waitTimerId);
+        waitTimerId = null;
+        waitTimeRemaining = Math.max(
+          0,
+          waitTimeRemaining - (performance.now() - waitTimeStarted)
+        );
+        state = "paused-waiting";
+      } else if (state === "go") {
+        state = "paused-reset";
+      } else {
+        return;
+      }
+
+      targetButton.className = "reaction-target is-ready";
+      promptEl.textContent = "Paused";
+      detailEl.textContent = "Return to continue";
+      messageEl.textContent = "Round paused.";
+    },
+    resume() {
+      if (state === "paused-waiting") {
+        state = "waiting";
+        waitTimeStarted = performance.now();
+        waitTimerId = window.setTimeout(showSignal, waitTimeRemaining);
+        targetButton.className = "reaction-target is-waiting";
+        promptEl.textContent = "Wait";
+        detailEl.textContent = "Do not tap yet";
+        messageEl.textContent = "Watch for green.";
+      } else if (state === "paused-reset") {
+        state = "ready";
+        targetButton.className = "reaction-target is-ready";
+        promptEl.textContent = "Start";
+        detailEl.textContent = "Tap to begin";
+        messageEl.textContent = "Round reset after pause.";
+      }
+    },
+    cleanup() {
+      window.clearTimeout(waitTimerId);
+      targetButton.removeEventListener("click", handleTargetTap);
+    }
   };
 }
 

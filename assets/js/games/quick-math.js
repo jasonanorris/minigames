@@ -9,6 +9,7 @@ export function startQuickMath({ stage }) {
   let timerId = null;
   let isRunning = false;
   let isFinished = false;
+  let wasRunningBeforePause = false;
 
   stage.innerHTML = `
     <div class="quick-math" aria-live="polite">
@@ -127,6 +128,7 @@ export function startQuickMath({ stage }) {
     timeLeft = GAME_SECONDS;
     isRunning = false;
     isFinished = false;
+    wasRunningBeforePause = false;
     scoreEl.textContent = "0";
     timeEl.textContent = String(GAME_SECONDS);
     bestEl.textContent = String(readBestScore());
@@ -139,10 +141,28 @@ export function startQuickMath({ stage }) {
   restartButton.addEventListener("click", restartGame);
   showQuestion();
 
-  return () => {
-    window.clearInterval(timerId);
-    answersEl.removeEventListener("click", handleAnswer);
-    restartButton.removeEventListener("click", restartGame);
+  return {
+    pause() {
+      wasRunningBeforePause = isRunning;
+
+      if (isRunning) {
+        window.clearInterval(timerId);
+        timerId = null;
+        isRunning = false;
+        messageEl.textContent = "Paused.";
+      }
+    },
+    resume() {
+      if (wasRunningBeforePause && !isFinished) {
+        wasRunningBeforePause = false;
+        startTimer();
+      }
+    },
+    cleanup() {
+      window.clearInterval(timerId);
+      answersEl.removeEventListener("click", handleAnswer);
+      restartButton.removeEventListener("click", restartGame);
+    }
   };
 }
 

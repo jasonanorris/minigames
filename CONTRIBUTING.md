@@ -48,18 +48,31 @@ Games should be:
 - Playable without accounts
 - Playable offline after the app has loaded successfully
 
+Games may return either a cleanup function or a lifecycle object from their `start`
+function. Timed games should use the lifecycle object so backgrounding or locking the
+phone does not consume play time:
+
+```js
+return {
+  pause() {},
+  resume() {},
+  cleanup() {}
+};
+```
+
 ## Checks
 
 Run the lightweight JavaScript checks before submitting changes:
 
 ```bash
-node --check assets/js/app.js
-node --check assets/js/games/index.js
-node --check assets/js/games/tap-race.js
-node --check sw.js
+npm run check
 ```
 
-Also check that `manifest.json` remains valid JSON.
+Run the browser tests for app navigation, mobile layouts, and game behavior:
+
+```bash
+npm test
+```
 
 ## Versions
 

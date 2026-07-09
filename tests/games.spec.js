@@ -19,6 +19,26 @@ test("Tap Race starts, scores, restarts, and reads the saved best", async ({ pag
   await expect(page.locator("#tap-message")).toHaveText("First tap starts the clock.");
 });
 
+test("Tap Race pauses while the app is hidden and resumes with its time intact", async ({
+  page
+}) => {
+  await page.goto("/");
+  await launchGame(page, "Tap Race");
+
+  await page.locator("#tap-target").click();
+  await expect(page.locator("#tap-message")).toHaveText("Go.");
+  await setDocumentVisibility(page, "hidden");
+  await expect(page.locator("#tap-message")).toHaveText("Paused.");
+  const pausedTime = await page.locator("#tap-time").textContent();
+
+  await page.waitForTimeout(1200);
+  await expect(page.locator("#tap-time")).toHaveText(pausedTime);
+
+  await setDocumentVisibility(page, "visible");
+  await expect(page.locator("#tap-message")).toHaveText("Go.");
+  await expect(page.locator("#tap-time")).not.toHaveText(pausedTime, { timeout: 1500 });
+});
+
 test("Reaction Time handles early taps", async ({ page }) => {
   await page.goto("/");
   await launchGame(page, "Reaction Time");
@@ -173,6 +193,16 @@ test("Quick Math scores answers, saves its best, and restarts", async ({ page })
 async function launchGame(page, name) {
   await page.getByRole("button", { name, exact: true }).click();
   await expect(page.locator("body")).toHaveClass(/is-playing/);
+}
+
+async function setDocumentVisibility(page, state) {
+  await page.evaluate((visibilityState) => {
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      value: visibilityState
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+  }, state);
 }
 
 async function readMathAnswer(page) {

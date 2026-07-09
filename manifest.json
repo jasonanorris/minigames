@@ -7,7 +7,7 @@
   "scope": "./",
   "display": "fullscreen",
   "display_override": ["fullscreen", "standalone"],
-  "orientation": "portrait",
+  "orientation": "any",
   "theme_color": "#101820",
   "background_color": "#101820",
   "categories": ["games", "entertainment"],

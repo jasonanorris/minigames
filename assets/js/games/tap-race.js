@@ -6,6 +6,7 @@ export function startTapRace({ stage }) {
   let timeLeft = GAME_SECONDS;
   let timerId = null;
   let isRunning = false;
+  let wasRunningBeforePause = false;
 
   const bestScore = readBestScore();
 
@@ -94,6 +95,7 @@ export function startTapRace({ stage }) {
     score = 0;
     timeLeft = GAME_SECONDS;
     isRunning = false;
+    wasRunningBeforePause = false;
     scoreEl.textContent = "0";
     timeEl.textContent = String(GAME_SECONDS);
     bestEl.textContent = String(readBestScore());
@@ -105,10 +107,28 @@ export function startTapRace({ stage }) {
   targetButton.addEventListener("click", handleTap);
   restartButton.addEventListener("click", restartGame);
 
-  return () => {
-    window.clearInterval(timerId);
-    targetButton.removeEventListener("click", handleTap);
-    restartButton.removeEventListener("click", restartGame);
+  return {
+    pause() {
+      wasRunningBeforePause = isRunning;
+
+      if (isRunning) {
+        window.clearInterval(timerId);
+        timerId = null;
+        isRunning = false;
+        messageEl.textContent = "Paused.";
+      }
+    },
+    resume() {
+      if (wasRunningBeforePause && timeLeft > 0) {
+        wasRunningBeforePause = false;
+        startTimer();
+      }
+    },
+    cleanup() {
+      window.clearInterval(timerId);
+      targetButton.removeEventListener("click", handleTap);
+      restartButton.removeEventListener("click", restartGame);
+    }
   };
 }
 
