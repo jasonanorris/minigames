@@ -10,6 +10,7 @@ const gameList = document.querySelector("#game-list");
 const gameStage = document.querySelector("#game-stage");
 const stageTitle = document.querySelector("#stage-title");
 const homeButton = document.querySelector("#home-button");
+const networkStatusEl = document.querySelector("#network-status");
 const refreshButton = document.querySelector("#refresh-button");
 const themeColorMeta = document.querySelector("#theme-color");
 const versionEl = document.querySelector("#app-version");
@@ -89,6 +90,13 @@ function applyTheme(theme) {
     activeTheme.tintSecondary
   );
   themeColorMeta.content = activeTheme.color;
+}
+
+function updateNetworkStatus() {
+  const isOnline = navigator.onLine;
+  networkStatusEl.classList.toggle("is-offline", !isOnline);
+  networkStatusEl.setAttribute("aria-label", isOnline ? "Online" : "Offline");
+  networkStatusEl.title = isOnline ? "Online" : "Offline";
 }
 
 function cleanupActiveGame() {
@@ -237,7 +245,10 @@ homeButton.addEventListener("click", resetStage);
 refreshButton.addEventListener("click", () => {
   refreshApp().catch(() => window.location.reload());
 });
+window.addEventListener("online", updateNetworkStatus);
+window.addEventListener("offline", updateNetworkStatus);
 versionEl.textContent = `v${APP_VERSION}`;
+updateNetworkStatus();
 applyTheme(HOME_THEME);
 renderGameList();
 registerServiceWorker();

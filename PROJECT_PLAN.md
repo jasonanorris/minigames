@@ -182,7 +182,7 @@ Make the app feel finished on mobile.
 - [x] App-like background and theme colors, including per-game system theme tinting
 - [x] Reliable service-worker update activation and reload handoff
 - Optional install prompt button, implemented without tracking
-- Optional offline status indicator
+- [x] Offline status indicator using browser connectivity events without probes
 
 ## Phase 8: More Games
 

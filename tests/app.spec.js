@@ -44,6 +44,25 @@ test("compact header fits a narrow phone without overlap", async ({ page }) => {
   expect(fitsViewport).toBe(true);
 });
 
+test("connectivity indicator follows browser online and offline events", async ({
+  context,
+  page
+}) => {
+  await page.goto("/");
+
+  const status = page.locator("#network-status");
+  await expect(status).toHaveAttribute("aria-label", "Online");
+  await expect(status).not.toHaveClass(/is-offline/);
+
+  await context.setOffline(true);
+  await expect(status).toHaveAttribute("aria-label", "Offline");
+  await expect(status).toHaveClass(/is-offline/);
+
+  await context.setOffline(false);
+  await expect(status).toHaveAttribute("aria-label", "Online");
+  await expect(status).not.toHaveClass(/is-offline/);
+});
+
 test("displayed version matches the app version module", async ({ page }) => {
   await page.goto("/");
 
