@@ -54,7 +54,12 @@ function renderGameList() {
   }
 }
 
-function selectGame(game) {
+function selectGame(game, { updateHistory = true } = {}) {
+  if (updateHistory) {
+    const method = history.state?.view === "game" ? "replaceState" : "pushState";
+    history[method]({ view: "game", gameId: game.id }, "", window.location.href);
+  }
+
   cleanupActiveGame();
   applyTheme(game.theme);
   document.body.classList.add("is-playing");
@@ -70,6 +75,31 @@ function selectGame(game) {
 
   activeCleanup = typeof cleanup === "function" ? cleanup : null;
   gameStage.focus();
+}
+
+function handlePopState(event) {
+  if (event.state?.view === "game") {
+    const game = games.find(
+      (candidate) =>
+        candidate.id === event.state.gameId && typeof candidate.start === "function"
+    );
+
+    if (game) {
+      selectGame(game, { updateHistory: false });
+      return;
+    }
+  }
+
+  resetStage();
+}
+
+function returnToLauncher() {
+  if (history.state?.view === "game") {
+    history.back();
+    return;
+  }
+
+  resetStage();
 }
 
 function resetStage() {
@@ -241,15 +271,23 @@ async function refreshApp() {
   window.location.reload();
 }
 
-homeButton.addEventListener("click", resetStage);
+homeButton.addEventListener("click", returnToLauncher);
 refreshButton.addEventListener("click", () => {
   refreshApp().catch(() => window.location.reload());
 });
 window.addEventListener("online", updateNetworkStatus);
 window.addEventListener("offline", updateNetworkStatus);
+window.addEventListener("popstate", handlePopState);
 versionEl.textContent = `v${APP_VERSION}`;
 updateNetworkStatus();
 applyTheme(HOME_THEME);
 renderGameList();
+
+if (!history.state?.view) {
+  history.replaceState({ view: "launcher" }, "", window.location.href);
+} else if (history.state.view === "game") {
+  handlePopState({ state: history.state });
+}
+
 registerServiceWorker();
 preventPullToRefreshWhilePlaying();

@@ -181,6 +181,7 @@ Make the app feel finished on mobile.
 - [x] Safe-area handling and compact mobile header for modern phones
 - [x] App-like background and theme colors, including per-game system theme tinting
 - [x] Reliable service-worker update activation and reload handoff
+- [x] Android and browser Back navigation returns games to the launcher
 - Optional install prompt button, implemented without tracking
 - [x] Offline status indicator using browser connectivity events without probes
 

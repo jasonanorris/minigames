@@ -63,6 +63,30 @@ test("connectivity indicator follows browser online and offline events", async (
   await expect(status).not.toHaveClass(/is-offline/);
 });
 
+test("browser history moves between the launcher and a game", async ({ page }) => {
+  await page.goto("/");
+  await expect
+    .poll(() => page.evaluate(() => history.state))
+    .toEqual({ view: "launcher" });
+
+  await page.getByRole("button", { name: "Tap Race", exact: true }).click();
+  await expect(page.locator("body")).toHaveClass(/is-playing/);
+  await expect
+    .poll(() => page.evaluate(() => history.state))
+    .toEqual({ view: "game", gameId: "tap-race" });
+
+  await page.goBack();
+  await expect(page.locator("body")).not.toHaveClass(/is-playing/);
+  await expect(page.locator(".game-library")).toBeVisible();
+
+  await page.goForward();
+  await expect(page.locator("body")).toHaveClass(/is-playing/);
+  await expect(page.getByRole("heading", { name: "Tap Race" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Return to game list" }).click();
+  await expect(page.locator("body")).not.toHaveClass(/is-playing/);
+});
+
 test("displayed version matches the app version module", async ({ page }) => {
   await page.goto("/");
 
