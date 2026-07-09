@@ -107,6 +107,7 @@ test("manifest and service worker are available", async ({ page, request }) => {
   expect(manifest.display).toBe("fullscreen");
   expect(serviceWorker).toContain('self.addEventListener("message"');
   expect(serviceWorker).toContain('event.data?.type === "SKIP_WAITING"');
+  expect(serviceWorker).toContain("hasLegacyCache");
 
   await page.goto("/");
   await expect(page.locator("#refresh-button")).toHaveAttribute("title", "Refresh app");

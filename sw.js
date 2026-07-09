@@ -1,4 +1,4 @@
-const CACHE_NAME = "minigames-app-v0.18";
+const CACHE_NAME = "minigames-app-v0.19";
 
 const APP_SHELL = [
   "./",
@@ -19,7 +19,7 @@ const APP_SHELL = [
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(cacheAppShell());
+  event.waitUntil(installAppShell());
 });
 
 self.addEventListener("message", (event) => {
@@ -113,5 +113,18 @@ async function cacheAppShell() {
   if (failedAssets.length > 0) {
     console.error("MiniGames service worker install failed.", failedAssets);
     throw new Error("MiniGames app shell cache failed.");
+  }
+}
+
+async function installAppShell() {
+  await cacheAppShell();
+  const cacheNames = await caches.keys();
+  const hasLegacyCache = cacheNames.some((cacheName) => {
+    const match = cacheName.match(/^minigames-app-v0\.(\d{2})$/);
+    return match && Number(match[1]) <= 16;
+  });
+
+  if (hasLegacyCache) {
+    await self.skipWaiting();
   }
 }
