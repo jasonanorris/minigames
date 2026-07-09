@@ -270,6 +270,16 @@ p {
   flex: 0 0 auto;
 }
 
+.refresh-button.is-checking {
+  opacity: 0.62;
+}
+
+.refresh-button.is-update-ready {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(61, 214, 208, 0.14);
+}
+
 .stage-content {
   display: grid;
   min-height: 0;

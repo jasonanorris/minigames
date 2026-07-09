@@ -1,4 +1,4 @@
-const CACHE_NAME = "minigames-app-v0.16";
+const CACHE_NAME = "minigames-app-v0.17";
 
 const APP_SHELL = [
   "./",
@@ -20,7 +20,14 @@ const APP_SHELL = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(cacheAppShell());
+  // One-release migration: v0.16 clients cannot activate a waiting worker.
   self.skipWaiting();
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener("activate", (event) => {

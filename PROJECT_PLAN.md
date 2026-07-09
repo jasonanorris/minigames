@@ -180,6 +180,7 @@ Make the app feel finished on mobile.
 - Stable layout during gameplay
 - [x] Safe-area handling and compact mobile header for modern phones
 - [x] App-like background and theme colors, including per-game system theme tinting
+- [x] Reliable service-worker update activation and reload handoff
 - Optional install prompt button, implemented without tracking
 - Optional offline status indicator
 

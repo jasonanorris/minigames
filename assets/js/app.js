@@ -14,6 +14,10 @@ const refreshButton = document.querySelector("#refresh-button");
 const themeColorMeta = document.querySelector("#theme-color");
 const versionEl = document.querySelector("#app-version");
 let activeCleanup = null;
+let hadServiceWorkerController = false;
+let isReloadingForUpdate = false;
+let reloadOnControllerChange = false;
+let serviceWorkerRegistration = null;
 let touchStartY = 0;
 
 function renderGameList() {
@@ -99,9 +103,68 @@ function registerServiceWorker() {
     return;
   }
 
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js").catch(() => {});
+  hadServiceWorkerController = Boolean(navigator.serviceWorker.controller);
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    const isFirstInstall = !hadServiceWorkerController && !reloadOnControllerChange;
+    hadServiceWorkerController = true;
+
+    if (isFirstInstall || isReloadingForUpdate) {
+      return;
+    }
+
+    isReloadingForUpdate = true;
+    window.location.reload();
   });
+
+  window.addEventListener("load", async () => {
+    try {
+      const registration = await navigator.serviceWorker.register("sw.js");
+      serviceWorkerRegistration = registration;
+      watchForServiceWorkerUpdate(registration);
+      await registration.update();
+    } catch {
+      // The cached app remains usable when update checks fail or the device is offline.
+    }
+  });
+}
+
+function watchForServiceWorkerUpdate(registration) {
+  if (registration.waiting && navigator.serviceWorker.controller) {
+    markUpdateReady();
+  }
+
+  registration.addEventListener("updatefound", () => {
+    const worker = registration.installing;
+
+    if (!worker) {
+      return;
+    }
+
+    worker.addEventListener("statechange", () => {
+      if (worker.state !== "installed" || !navigator.serviceWorker.controller) {
+        return;
+      }
+
+      if (reloadOnControllerChange) {
+        activateWaitingWorker(registration);
+        return;
+      }
+
+      markUpdateReady();
+    });
+  });
+}
+
+function markUpdateReady() {
+  refreshButton.classList.remove("is-checking");
+  refreshButton.classList.add("is-update-ready");
+  refreshButton.disabled = false;
+  refreshButton.setAttribute("aria-label", "Update app");
+  refreshButton.title = "Update available";
+}
+
+function activateWaitingWorker(registration) {
+  registration.waiting?.postMessage({ type: "SKIP_WAITING" });
 }
 
 function preventPullToRefreshWhilePlaying() {
@@ -133,9 +196,38 @@ function preventPullToRefreshWhilePlaying() {
 }
 
 async function refreshApp() {
-  if ("serviceWorker" in navigator) {
-    const registration = await navigator.serviceWorker.getRegistration();
-    await registration?.update();
+  refreshButton.disabled = true;
+  refreshButton.classList.add("is-checking");
+
+  if (!("serviceWorker" in navigator)) {
+    window.location.reload();
+    return;
+  }
+
+  const registration =
+    serviceWorkerRegistration || (await navigator.serviceWorker.getRegistration());
+
+  if (!registration) {
+    window.location.reload();
+    return;
+  }
+
+  reloadOnControllerChange = true;
+
+  if (registration.waiting) {
+    activateWaitingWorker(registration);
+    return;
+  }
+
+  await registration.update();
+
+  if (registration.waiting) {
+    activateWaitingWorker(registration);
+    return;
+  }
+
+  if (registration.installing) {
+    return;
   }
 
   window.location.reload();

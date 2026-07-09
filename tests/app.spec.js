@@ -97,13 +97,19 @@ test("game launcher uses square tiles and marks placeholders unavailable", async
 
 test("manifest and service worker are available", async ({ page, request }) => {
   const manifestResponse = await request.get("/manifest.json");
+  const serviceWorkerResponse = await request.get("/sw.js");
   expect(manifestResponse.ok()).toBe(true);
+  expect(serviceWorkerResponse.ok()).toBe(true);
 
   const manifest = await manifestResponse.json();
+  const serviceWorker = await serviceWorkerResponse.text();
   expect(manifest.name).toBe("MiniGames");
   expect(manifest.display).toBe("fullscreen");
+  expect(serviceWorker).toContain('self.addEventListener("message"');
+  expect(serviceWorker).toContain('event.data?.type === "SKIP_WAITING"');
 
   await page.goto("/");
+  await expect(page.locator("#refresh-button")).toHaveAttribute("title", "Refresh app");
   await expect
     .poll(() => page.evaluate(() => navigator.serviceWorker.getRegistration().then(Boolean)))
     .toBe(true);
