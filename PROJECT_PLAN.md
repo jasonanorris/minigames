@@ -203,6 +203,7 @@ Validate the game registry and lifecycle with additional games.
 
 - [x] Check app navigation and mobile viewport fit
 - [x] Check manifest availability and service worker registration
+- [x] Check app-shell caching, offline reload, and cached game launch
 - [x] Check Tap Race timing, restart behavior, and saved best score
 - [x] Check Reaction Time early taps and saved best time
 - [x] Check Memory Grid matching, restart behavior, and saved best score
@@ -236,11 +237,11 @@ At the end of this milestone, MiniGames should run locally, install as a PWA on 
 
 ## Acceptance Checklist
 
-- [ ] App loads in a browser
-- [ ] App has a valid manifest
-- [ ] App registers a service worker
-- [ ] App shell is cached
-- [ ] App works offline after first load
+- [x] App loads in a browser
+- [x] App has a valid manifest
+- [x] App registers a service worker
+- [x] App shell is cached
+- [x] App works offline after first load
 - [ ] Android can add/install it from Chrome
 - [ ] Home screen launch uses app-like display mode
 - [ ] iPhone Safari Add to Home Screen behavior is reasonably supported

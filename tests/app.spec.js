@@ -240,3 +240,43 @@ test("manifest and service worker are available", async ({ page, request }) => {
     .poll(() => page.evaluate(() => navigator.serviceWorker.getRegistration().then(Boolean)))
     .toBe(true);
 });
+
+test("cached app reloads offline and launches a game", async ({ context, page }) => {
+  await page.goto("/");
+  await expect
+    .poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)))
+    .toBe(true);
+  await expect
+    .poll(() =>
+      page.evaluate(async () => {
+        const cacheNames = await caches.keys();
+        const appCache = cacheNames.find((name) => name.startsWith("minigames-app-v"));
+
+        if (!appCache) {
+          return false;
+        }
+
+        const cache = await caches.open(appCache);
+        const requiredPaths = [
+          "/index.html",
+          "/assets/css/styles.css",
+          "/assets/js/app.js",
+          "/assets/js/games/memory-grid.js"
+        ];
+        const responses = await Promise.all(requiredPaths.map((path) => cache.match(path)));
+        return responses.every(Boolean);
+      })
+    )
+    .toBe(true);
+
+  await context.setOffline(true);
+  await page.reload({ waitUntil: "domcontentloaded" });
+
+  await expect(page.getByRole("heading", { name: "MiniGames" })).toBeVisible();
+  await expect(page.locator("#network-status")).toHaveAttribute("aria-label", "Offline");
+  await page.getByRole("button", { name: "Memory Grid", exact: true }).click();
+  await expect(page.locator("body")).toHaveClass(/is-playing/);
+  await expect(page.locator(".memory-grid")).toBeVisible();
+
+  await context.setOffline(false);
+});
