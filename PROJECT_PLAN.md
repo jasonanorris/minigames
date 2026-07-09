@@ -182,6 +182,7 @@ Make the app feel finished on mobile.
 - [x] App-like background and theme colors, including per-game system theme tinting
 - [x] Reliable service-worker update activation and reload handoff
 - [x] Android and browser Back navigation returns games to the launcher
+- [x] Prevent Android Back on the launcher from exposing a blank standalone page
 - [x] Preserve launcher scroll position and selected-game focus after returning
 - [x] Add touch feedback to game tiles without shifting the launcher grid
 - [x] Add contained momentum scrolling for the launcher on mobile

@@ -16,6 +16,8 @@ const themeColorMeta = document.querySelector("#theme-color");
 const versionEl = document.querySelector("#app-version");
 const gameLibrary = document.querySelector(".game-library");
 const LAUNCH_ANIMATION_MS = 220;
+const LAUNCHER_STATE = { view: "launcher", guarded: true };
+const LAUNCHER_BOUNDARY_STATE = { view: "launcher-boundary" };
 let activeCleanup = null;
 let hadServiceWorkerController = false;
 let isReloadingForUpdate = false;
@@ -118,6 +120,10 @@ function handlePopState(event) {
   }
 
   resetStage();
+
+  if (event.state?.view !== "launcher" || !event.state.guarded) {
+    armLauncherBackGuard();
+  }
 }
 
 function returnToLauncher() {
@@ -143,6 +149,11 @@ function resetStage() {
       ?.focus({ preventScroll: true });
     gameLibrary.scrollTop = launcherScrollTop;
   });
+}
+
+function armLauncherBackGuard() {
+  history.replaceState(LAUNCHER_BOUNDARY_STATE, "", window.location.href);
+  history.pushState(LAUNCHER_STATE, "", window.location.href);
 }
 
 function applyTheme(theme) {
@@ -317,8 +328,11 @@ updateNetworkStatus();
 applyTheme(HOME_THEME);
 renderGameList();
 
-if (!history.state?.view) {
-  history.replaceState({ view: "launcher" }, "", window.location.href);
+if (
+  history.state?.view !== "game" &&
+  (history.state?.view !== "launcher" || !history.state.guarded)
+) {
+  armLauncherBackGuard();
 } else if (history.state.view === "game") {
   handlePopState({ state: history.state });
 }

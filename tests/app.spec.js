@@ -67,7 +67,7 @@ test("browser history moves between the launcher and a game", async ({ page }) =
   await page.goto("/");
   await expect
     .poll(() => page.evaluate(() => history.state))
-    .toEqual({ view: "launcher" });
+    .toEqual({ view: "launcher", guarded: true });
 
   await page.getByRole("button", { name: "Tap Race", exact: true }).click();
   await expect(page.locator("body")).toHaveClass(/is-playing/);
@@ -85,6 +85,19 @@ test("browser history moves between the launcher and a game", async ({ page }) =
 
   await page.getByRole("button", { name: "Return to game list" }).click();
   await expect(page.locator("body")).not.toHaveClass(/is-playing/);
+});
+
+test("Back on the launcher stays inside the app instead of showing a blank page", async ({
+  page
+}) => {
+  await page.goto("/");
+  await page.goBack();
+
+  await expect(page.getByRole("heading", { name: "MiniGames" })).toBeVisible();
+  await expect(page.locator(".game-library")).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => history.state))
+    .toEqual({ view: "launcher", guarded: true });
 });
 
 test("selected tile animates without shifting the launcher grid", async ({ page }) => {
