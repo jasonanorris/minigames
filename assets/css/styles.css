@@ -65,7 +65,7 @@ button {
   min-height: 100vh;
   margin: 0 auto;
   overflow: auto;
-  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
   scrollbar-width: none;
 }
 
@@ -81,19 +81,19 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 6px 0 12px;
+  gap: 12px;
+  padding: 2px 0 8px;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .app-version {
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
   font-weight: 750;
   white-space: nowrap;
@@ -681,6 +681,15 @@ p {
 }
 
 @media (max-width: 819px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  .icon-button {
+    width: 40px;
+    height: 40px;
+  }
+
   .app-main {
     grid-template-rows: minmax(0, 1fr);
   }
@@ -691,6 +700,14 @@ p {
 
   .is-playing .game-stage {
     display: grid;
+  }
+
+  .is-playing .app-shell {
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .is-playing .app-header {
+    display: none;
   }
 }
 

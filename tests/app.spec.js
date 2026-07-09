@@ -19,10 +19,29 @@ test("app shell fits a mobile viewport and opens and closes games", async ({ pag
   await page.getByRole("button", { name: /Reaction Time/ }).click();
   await expect(page.getByRole("heading", { name: "Reaction Time" })).toBeVisible();
   await expect(page.locator("body")).toHaveClass(/is-playing/);
+  await expect(page.locator(".app-header")).toBeHidden();
 
   await page.getByRole("button", { name: "Return to game list" }).click();
   await expect(page.locator("body")).not.toHaveClass(/is-playing/);
+  await expect(page.locator(".app-header")).toBeVisible();
   await expect(page.locator(".game-library")).toBeVisible();
+});
+
+test("compact header fits a narrow phone without overlap", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto("/");
+
+  const titleBox = await page.getByRole("heading", { name: "MiniGames" }).boundingBox();
+  const actionsBox = await page.locator(".header-actions").boundingBox();
+  const fitsViewport = await page.evaluate(
+    () => document.documentElement.scrollWidth <= window.innerWidth
+  );
+
+  expect(titleBox).not.toBeNull();
+  expect(actionsBox).not.toBeNull();
+  expect(titleBox.x + titleBox.width).toBeLessThanOrEqual(actionsBox.x);
+  expect(actionsBox.x + actionsBox.width).toBeLessThanOrEqual(320);
+  expect(fitsViewport).toBe(true);
 });
 
 test("displayed version matches the app version module", async ({ page }) => {
