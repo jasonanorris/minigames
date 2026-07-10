@@ -61,7 +61,7 @@ body:not(.is-playing) .app-shell {
   aspect-ratio: auto;
   max-width: none;
   padding: 1dvh 4.3vw 23.1dvh;
-  background: url("../images/retroHandheld3.png") center / 100% 100% no-repeat;
+  background: url("../images/retroHandheld3b.png") center / 100% 100% no-repeat;
 }
 
 body:not(.is-playing) .app-header h1 {
