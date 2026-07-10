@@ -106,6 +106,12 @@ button {
   padding: 2px 0 8px;
 }
 
+body:not(.is-playing) .app-header {
+  padding-top: max(2px, calc(env(safe-area-inset-top) - 1dvh));
+  padding-right: max(0px, calc(env(safe-area-inset-right) - 4.3vw));
+  padding-left: max(0px, calc(env(safe-area-inset-left) - 4.3vw));
+}
+
 .header-actions {
   display: flex;
   align-items: center;
