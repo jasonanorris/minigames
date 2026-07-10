@@ -66,6 +66,15 @@ body:not(.is-playing) .app-shell {
 
 body:not(.is-playing) .app-header h1 {
   color: #000;
+  font-family: "Courier New", "Lucida Console", ui-monospace, monospace;
+  font-weight: 900;
+  letter-spacing: -0.09em;
+  -webkit-text-stroke: 1px #000;
+  text-shadow: 3px 3px 0 rgba(94, 94, 104, 0.5);
+}
+
+body:not(.is-playing) .app-version {
+  color: #32383b;
 }
 
 .launcher-controls {
@@ -242,10 +251,11 @@ p {
 .game-list {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  gap: 14px;
 }
 
 .game-card {
+  --cartridge-color: #ff6b6b;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -253,12 +263,21 @@ p {
   gap: 6px;
   width: 100%;
   min-width: 0;
+  min-height: 0;
   aspect-ratio: 1;
-  padding: 6px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--panel-strong);
-  color: var(--text);
+  overflow: hidden;
+  padding: 14% 12% 18%;
+  border: 0;
+  border-radius: 4px;
+  background-color: transparent;
+  background-image:
+    linear-gradient(var(--cartridge-color), var(--cartridge-color)),
+    url("../images/game.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-blend-mode: color, normal;
+  color: #111;
   text-align: center;
   cursor: pointer;
   touch-action: manipulation;
@@ -266,18 +285,39 @@ p {
   -webkit-tap-highlight-color: transparent;
 }
 
+.game-card:nth-child(7n + 2) {
+  --cartridge-color: #42d6c5;
+}
+
+.game-card:nth-child(7n + 3) {
+  --cartridge-color: #a979e8;
+}
+
+.game-card:nth-child(7n + 4) {
+  --cartridge-color: #ffd166;
+}
+
+.game-card:nth-child(7n + 5) {
+  --cartridge-color: #5aa9ff;
+}
+
+.game-card:nth-child(7n + 6) {
+  --cartridge-color: #ff78b7;
+}
+
+.game-card:nth-child(7n + 7) {
+  --cartridge-color: #7bd66f;
+}
+
 .game-card:focus-visible,
 .game-card:hover:not(:disabled) {
   outline: none;
-  border-color: var(--accent);
-  background: #263a45;
+  filter: brightness(1.08);
   transform: translateY(-1px);
 }
 
 .game-card.is-launching {
   z-index: 1;
-  border-color: var(--cyan);
-  background: #2b4650;
   animation: game-card-launch 220ms ease-out both;
   box-shadow: 0 0 0 3px rgba(61, 214, 208, 0.2), 0 8px 20px rgba(0, 0, 0, 0.22);
 }
@@ -320,9 +360,7 @@ p {
 }
 
 .game-card.is-placeholder {
-  border-color: rgba(43, 65, 75, 0.7);
-  background: rgba(32, 50, 61, 0.58);
-  color: var(--muted);
+  color: #4d5155;
   cursor: default;
   opacity: 0.62;
 }

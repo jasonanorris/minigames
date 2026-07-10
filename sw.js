@@ -1,4 +1,4 @@
-const CACHE_NAME = "minigames-app-v0.29";
+const CACHE_NAME = "minigames-app-v0.31";
 
 const APP_SHELL = [
   "./",
@@ -16,6 +16,7 @@ const APP_SHELL = [
   "assets/images/dpad.png",
   "assets/images/startselect.png",
   "assets/images/buttons.png",
+  "assets/images/game.png",
   "assets/icons/icon.svg",
   "assets/icons/apple-touch-icon.png",
   "assets/icons/icon-192.png",
