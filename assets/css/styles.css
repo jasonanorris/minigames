@@ -46,6 +46,27 @@ body {
   transition: background-color 180ms ease-out;
 }
 
+body:not(.is-playing) {
+  display: grid;
+  overflow: hidden;
+  place-items: center;
+  background: #000;
+}
+
+body:not(.is-playing) .app-shell {
+  width: 100vw;
+  height: 100dvh;
+  min-height: 100dvh;
+  aspect-ratio: auto;
+  max-width: none;
+  padding: 1dvh 4.3vw 23.1dvh;
+  background: url("../images/retroHandheld3.png") center / 100% 100% no-repeat;
+}
+
+body:not(.is-playing) .app-header h1 {
+  color: #000;
+}
+
 body::-webkit-scrollbar,
 .game-library::-webkit-scrollbar,
 .game-stage::-webkit-scrollbar,
@@ -235,6 +256,10 @@ p {
   font-size: clamp(1.1rem, 5vw, 1.6rem);
   font-weight: 900;
   line-height: 1;
+}
+
+.game-card-mark::before {
+  content: attr(data-mark);
 }
 
 .game-card:nth-child(2) .game-card-mark {

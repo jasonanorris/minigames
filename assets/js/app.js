@@ -51,7 +51,7 @@ function renderGameList() {
     }
 
     button.innerHTML = `
-      <span class="game-card-mark" aria-hidden="true">${game.mark}</span>
+      <span class="game-card-mark" data-mark="${game.mark}" aria-hidden="true"></span>
       <span class="game-card-title">${game.title}</span>
     `;
 

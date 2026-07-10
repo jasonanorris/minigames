@@ -108,8 +108,8 @@ Create `manifest.json` with Android-friendly app metadata.
 - [x] `short_name`: `MiniGames`
 - [x] `start_url`: `/`
 - [x] `scope`: `/`
-- [x] `display`: `standalone`
-- [x] `orientation`: `portrait`
+- [x] `display`: `fullscreen` with a `standalone` fallback
+- [x] `orientation`: `any`
 - [x] `theme_color` and `background_color`
 - [x] 192px and 512px app icons
 
@@ -199,6 +199,22 @@ Validate the game registry and lifecycle with additional games.
 - [x] Memory Grid with shuffled pairs, move counting, and local best score
 - [x] Quick Math with timed questions, streaks, rising difficulty, and local best score
 
+## Game Ideas
+
+Add ideas here using `- [ ] Game name - short description`. Check an idea off when
+it becomes playable.
+
+- [ ] Snake - steer, eat, and grow without hitting the walls or yourself
+- [ ] Tic Tac Toe - quick local matches against another player or simple AI
+- [ ] Simon - repeat an increasingly long color sequence
+- [ ] Word Mix - unscramble short words against a timer
+- [ ] Mines - clear a compact minefield using numbered clues
+- [ ] 2048 - merge matching number tiles
+- [ ] Color Match - identify matching colors under time pressure
+- [ ] Maze - navigate a small generated maze
+- [ ] Breakout - clear bricks with a paddle and ball
+- [ ] Dice Roll - configurable local dice roller with simple animations
+
 ## Automated Testing
 
 - [x] Check app navigation and mobile viewport fit
@@ -208,6 +224,7 @@ Validate the game registry and lifecycle with additional games.
 - [x] Check Reaction Time early taps and saved best time
 - [x] Check Memory Grid matching, restart behavior, and saved best score
 - [x] Check Quick Math scoring, timer, restart behavior, and saved best score
+- [x] Run Lighthouse performance, accessibility, and best-practices audits
 
 ## Documentation and Trust
 

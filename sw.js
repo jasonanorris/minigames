@@ -1,4 +1,4 @@
-const CACHE_NAME = "minigames-app-v0.25";
+const CACHE_NAME = "minigames-app-v0.27";
 
 const APP_SHELL = [
   "./",
@@ -12,6 +12,7 @@ const APP_SHELL = [
   "assets/js/games/reaction-time.js",
   "assets/js/games/memory-grid.js",
   "assets/js/games/quick-math.js",
+  "assets/images/retroHandheld3.png",
   "assets/icons/icon.svg",
   "assets/icons/apple-touch-icon.png",
   "assets/icons/icon-192.png",
