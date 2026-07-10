@@ -1,5 +1,8 @@
 const DEFAULT_PRIZES = ["Yes", "No", "Try Again", "Try Again", "Try Again"];
 const COLORS = ["#ef476f", "#ffd166", "#06d6a0", "#118ab2", "#9b5de5", "#f78c6b", "#4cc9f0", "#90be6d"];
+const CLICK_VOLUME = 0.045;
+const HORN_VOLUME = 0.12;
+const LANDING_RANDOMNESS = 0.72;
 
 export function startTheWheel({ stage }) {
   let prizes = [...DEFAULT_PRIZES];
@@ -84,9 +87,9 @@ export function startTheWheel({ stage }) {
     const now = audioContext.currentTime;
     const oscillator = audioContext.createOscillator();
     const gain = audioContext.createGain();
-    oscillator.type = "sine";
+    oscillator.type = "triangle";
     oscillator.frequency.setValueAtTime(620, now);
-    gain.gain.setValueAtTime(0.018, now);
+    gain.gain.setValueAtTime(CLICK_VOLUME, now);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.035);
     oscillator.connect(gain).connect(audioContext.destination);
     oscillator.start(now);
@@ -110,7 +113,7 @@ export function startTheWheel({ stage }) {
       oscillator.type = index === notes.length - 1 ? "square" : "triangle";
       oscillator.frequency.setValueAtTime(frequency, noteStart);
       gain.gain.setValueAtTime(0.0001, noteStart);
-      gain.gain.exponentialRampToValueAtTime(0.055, noteStart + 0.018);
+      gain.gain.exponentialRampToValueAtTime(HORN_VOLUME, noteStart + 0.018);
       gain.gain.exponentialRampToValueAtTime(
         0.0001,
         noteStart + (index === notes.length - 1 ? 0.42 : 0.16)
@@ -219,10 +222,11 @@ export function startTheWheel({ stage }) {
     const winnerIndex = Math.floor(Math.random() * prizes.length);
     const winningPrize = prizes[winnerIndex];
     const slice = 360 / prizes.length;
-    const centerAngle = winnerIndex * slice + slice / 2;
+    const landingOffset = (Math.random() - 0.5) * slice * LANDING_RANDOMNESS;
+    const landingAngle = winnerIndex * slice + slice / 2 + landingOffset;
     const extraTurns = 5 + Math.floor(Math.random() * 3);
     const currentNormalized = ((rotation % 360) + 360) % 360;
-    const targetNormalized = (360 - centerAngle) % 360;
+    const targetNormalized = (360 - landingAngle) % 360;
     rotation += extraTurns * 360 + ((targetNormalized - currentNormalized + 360) % 360);
     canvas.style.transform = `rotate(${rotation}deg)`;
     lastTickIndex = getPrizeIndexAtAngle(getRenderedRotation());

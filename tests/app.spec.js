@@ -145,6 +145,22 @@ test("Back on the launcher stays inside the app instead of showing a blank page"
     .toEqual({ view: "launcher", guarded: true });
 });
 
+test("Back on a restored launcher history state stays inside the app", async ({
+  page
+}) => {
+  await page.addInitScript(() => {
+    history.replaceState({ view: "launcher", guarded: true }, "", location.href);
+  });
+  await page.goto("/");
+  await page.goBack();
+
+  await expect(page.getByRole("heading", { name: "MiniGames" })).toBeVisible();
+  await expect(page.locator(".game-library")).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => history.state))
+    .toEqual({ view: "launcher", guarded: true });
+});
+
 test("selected tile animates without shifting the launcher grid", async ({ page }) => {
   await page.goto("/");
 

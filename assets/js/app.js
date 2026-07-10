@@ -415,10 +415,7 @@ updateNetworkStatus();
 applyTheme(HOME_THEME);
 renderGameList();
 
-if (
-  history.state?.view !== "game" &&
-  (history.state?.view !== "launcher" || !history.state.guarded)
-) {
+if (history.state?.view !== "game") {
   armLauncherBackGuard();
 } else if (history.state.view === "game") {
   handlePopState({ state: history.state });
