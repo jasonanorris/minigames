@@ -37,7 +37,7 @@
         <section class="game-stage" aria-labelledby="stage-title">
           <div class="stage-topbar">
             <div>
-              <p class="eyebrow">Play area</p>
+              <p class="eyebrow" id="stage-eyebrow">Play area</p>
               <h2 id="stage-title">Choose a game</h2>
             </div>
             <button class="icon-button" id="home-button" type="button" aria-label="Return to game list" hidden>
@@ -49,6 +49,11 @@
           </div>
         </section>
       </main>
+
+      <button class="small-game-back" id="small-game-back" type="button" aria-label="Return to game list" hidden>
+        <span aria-hidden="true">←</span>
+        <span>Back</span>
+      </button>
 
       <div class="launcher-controls" aria-hidden="true">
         <img class="launcher-control launcher-dpad" src="assets/images/dpad.png" alt="">

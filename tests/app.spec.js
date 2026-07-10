@@ -19,10 +19,14 @@ test("app shell fits a mobile viewport and opens and closes games", async ({ pag
   await page.getByRole("button", { name: /Reaction Time/ }).click();
   await expect(page.getByRole("heading", { name: "Reaction Time" })).toBeVisible();
   await expect(page.locator("body")).toHaveClass(/is-playing/);
-  await expect(page.locator(".app-header")).toBeHidden();
+  await expect(page.locator("body")).toHaveClass(/is-small-game/);
+  await expect(page.locator(".app-header")).toBeVisible();
+  await expect(page.locator(".game-library")).toBeHidden();
+  await expect(page.locator("#small-game-back")).toBeVisible();
 
   await page.getByRole("button", { name: "Return to game list" }).click();
   await expect(page.locator("body")).not.toHaveClass(/is-playing/);
+  await expect(page.locator("body")).not.toHaveClass(/is-small-game/);
   await expect(page.locator(".app-header")).toBeVisible();
   await expect(page.locator(".game-library")).toBeVisible();
 });
@@ -186,6 +190,8 @@ test("game theme colors update and return to the home theme", async ({ page }) =
   await expect(themeMeta).toHaveAttribute("content", "#101820");
 
   await page.getByRole("button", { name: /Memory Grid/ }).click();
+  await expect(page.locator("body")).not.toHaveClass(/is-small-game/);
+  await expect(page.locator(".app-header")).toBeHidden();
   await expect(themeMeta).toHaveAttribute("content", "#181c2a");
   await expect(page.locator("html")).toHaveCSS("background-color", "rgb(24, 28, 42)");
 

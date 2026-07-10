@@ -9,7 +9,9 @@ const HOME_THEME = {
 const gameList = document.querySelector("#game-list");
 const gameStage = document.querySelector("#game-stage");
 const stageTitle = document.querySelector("#stage-title");
+const stageEyebrow = document.querySelector("#stage-eyebrow");
 const homeButton = document.querySelector("#home-button");
+const smallGameBackButton = document.querySelector("#small-game-back");
 const networkStatusEl = document.querySelector("#network-status");
 const refreshButton = document.querySelector("#refresh-button");
 const themeColorMeta = document.querySelector("#theme-color");
@@ -93,9 +95,13 @@ function selectGame(game, { updateHistory = true } = {}) {
 
   cleanupActiveGame();
   applyTheme(game.theme);
+  const isSmallGame = game.displayMode === "small";
+  document.body.classList.toggle("is-small-game", isSmallGame);
   document.body.classList.add("is-playing");
+  stageEyebrow.textContent = isSmallGame ? "Small game" : "Play area";
   stageTitle.textContent = game.title;
-  homeButton.hidden = false;
+  homeButton.hidden = isSmallGame;
+  smallGameBackButton.hidden = !isSmallGame;
   gameStage.innerHTML = "";
 
   const lifecycle = game.start({
@@ -147,9 +153,11 @@ function returnToLauncher() {
 function resetStage() {
   cleanupActiveGame();
   applyTheme(HOME_THEME);
-  document.body.classList.remove("is-playing");
+  document.body.classList.remove("is-playing", "is-small-game");
+  stageEyebrow.textContent = "Play area";
   stageTitle.textContent = "Choose a game";
   homeButton.hidden = true;
+  smallGameBackButton.hidden = true;
   gameStage.innerHTML = '<p class="empty-state">Select a game from the list to get started.</p>';
 
   window.requestAnimationFrame(() => {
@@ -338,6 +346,7 @@ async function refreshApp() {
 }
 
 homeButton.addEventListener("click", returnToLauncher);
+smallGameBackButton.addEventListener("click", returnToLauncher);
 refreshButton.addEventListener("click", () => {
   refreshApp().catch(() => window.location.reload());
 });

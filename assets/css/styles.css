@@ -22,6 +22,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   min-height: 100%;
   background: var(--theme-color);
@@ -46,14 +50,14 @@ body {
   transition: background-color 180ms ease-out;
 }
 
-body:not(.is-playing) {
+body:is(:not(.is-playing), .is-small-game) {
   display: grid;
   overflow: hidden;
   place-items: center;
   background: #000;
 }
 
-body:not(.is-playing) .app-shell {
+body:is(:not(.is-playing), .is-small-game) .app-shell {
   position: relative;
   width: 100vw;
   height: 100dvh;
@@ -64,7 +68,7 @@ body:not(.is-playing) .app-shell {
   background: url("../images/retroHandheld3b.png") center / 100% 100% no-repeat;
 }
 
-body:not(.is-playing) .app-header h1 {
+body:is(:not(.is-playing), .is-small-game) .app-header h1 {
   color: #000;
   font-family: "Courier New", "Lucida Console", ui-monospace, monospace;
   font-weight: 900;
@@ -73,7 +77,7 @@ body:not(.is-playing) .app-header h1 {
   text-shadow: 3px 3px 0 rgba(94, 94, 104, 0.5);
 }
 
-body:not(.is-playing) .app-version {
+body:is(:not(.is-playing), .is-small-game) .app-version {
   color: #32383b;
 }
 
@@ -81,7 +85,7 @@ body:not(.is-playing) .app-version {
   display: none;
 }
 
-body:not(.is-playing) .launcher-controls {
+body:is(:not(.is-playing), .is-small-game) .launcher-controls {
   display: block;
   pointer-events: none;
 }
@@ -113,6 +117,47 @@ body:not(.is-playing) .launcher-controls {
   right: 5vw;
   bottom: calc(3.5dvh + 50px);
   width: clamp(84px, 23vw, 200px);
+}
+
+.small-game-back {
+  position: absolute;
+  z-index: 3;
+  top: calc(76.9dvh + 10px);
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 96px;
+  min-height: 42px;
+  padding: 8px 16px;
+  border: 2px solid #29282f;
+  border-radius: 6px;
+  background: #4c4a55;
+  color: #fff;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.42);
+  font-family: "Courier New", "Lucida Console", ui-monospace, monospace;
+  font-weight: 900;
+  cursor: pointer;
+  transform: translateX(-50%);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.small-game-back:hover,
+.small-game-back:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  filter: brightness(1.12);
+}
+
+.small-game-back:active {
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.42);
+  transform: translate(-50%, 2px);
+}
+
+.small-game-back[hidden] {
+  display: none;
 }
 
 body::-webkit-scrollbar,
@@ -154,7 +199,7 @@ button {
   padding: 2px 0 8px;
 }
 
-body:not(.is-playing) .app-header {
+body:is(:not(.is-playing), .is-small-game) .app-header {
   padding-top: max(2px, calc(env(safe-area-inset-top) - 1dvh));
   padding-right: max(0px, calc(env(safe-area-inset-right) - 4.3vw));
   padding-left: max(0px, calc(env(safe-area-inset-left) - 4.3vw));
@@ -225,6 +270,27 @@ p {
   grid-template-rows: auto minmax(0, 1fr);
   min-height: 0;
   gap: 12px;
+}
+
+body.is-small-game .app-main {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+}
+
+body.is-small-game .game-library {
+  display: none;
+}
+
+body.is-small-game .game-stage {
+  display: grid;
+}
+
+body.is-small-game .app-shell {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+body.is-small-game .app-header {
+  display: flex;
 }
 
 .is-playing .game-library {

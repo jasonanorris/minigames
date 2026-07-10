@@ -26,6 +26,7 @@ export const games = [
     id: "tap-race",
     title: "Tap Race",
     mark: "10s",
+    displayMode: "small",
     description: "Tap as fast as you can before time runs out.",
     status: "Playable",
     theme: {
@@ -39,6 +40,7 @@ export const games = [
     id: "reaction-time",
     title: "Reaction Time",
     mark: "ms",
+    displayMode: "small",
     description: "Wait for green, then tap as quickly as you can.",
     status: "Playable",
     theme: {
@@ -52,6 +54,7 @@ export const games = [
     id: "memory-grid",
     title: "Memory Grid",
     mark: "2x",
+    displayMode: "full",
     description: "Flip cards and match pairs with as few moves as possible.",
     status: "Playable",
     theme: {
@@ -65,6 +68,7 @@ export const games = [
     id: "quick-math",
     title: "Quick Math",
     mark: "1+1",
+    displayMode: "small",
     description: "Solve short arithmetic bursts against the clock.",
     status: "Playable",
     theme: {
