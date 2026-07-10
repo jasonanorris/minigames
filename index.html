@@ -55,10 +55,13 @@
         <span>Back</span>
       </button>
 
-      <div class="launcher-controls" aria-hidden="true">
+      <div class="launcher-controls">
         <img class="launcher-control launcher-dpad" src="assets/images/dpad.png" alt="">
         <img class="launcher-control launcher-startselect" src="assets/images/startselect.png" alt="">
-        <img class="launcher-control launcher-buttons" src="assets/images/buttons.png" alt="">
+        <div class="launcher-buttons" aria-label="Game controls">
+          <button class="controller-button controller-button-a" type="button" data-control="a" aria-label="A button"></button>
+          <button class="controller-button controller-button-b" type="button" data-control="b" aria-label="B button"></button>
+        </div>
       </div>
     </div>
   </body>

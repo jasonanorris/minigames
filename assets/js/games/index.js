@@ -2,6 +2,7 @@ import { startTapRace } from "./tap-race.js";
 import { startReactionTime } from "./reaction-time.js";
 import { startMemoryGrid } from "./memory-grid.js";
 import { startQuickMath } from "./quick-math.js";
+import { startTheWheel } from "./the-wheel.js";
 
 const placeholderGames = [
   { id: "snake", title: "Snake", mark: "S" },
@@ -77,6 +78,16 @@ export const games = [
       tintSecondary: "rgba(247, 201, 72, 0.1)"
     },
     start: startQuickMath
+  },
+  {
+    id: "the-wheel",
+    title: "The Wheel",
+    mark: "★",
+    displayMode: "small",
+    description: "Fill the wheel with prizes and give it a spin.",
+    status: "Playable",
+    theme: { color: "#24142d", tint: "rgba(239, 71, 111, 0.2)", tintSecondary: "rgba(255, 209, 102, 0.14)" },
+    start: startTheWheel
   },
   ...placeholderGames
 ];

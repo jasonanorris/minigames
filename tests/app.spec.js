@@ -48,6 +48,20 @@ test("compact header fits a narrow phone without overlap", async ({ page }) => {
   expect(fitsViewport).toBe(true);
 });
 
+test("CSS A and B controls operate a small game", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Tap Race", exact: true }).click();
+
+  await expect(page.locator("body")).toHaveClass(/is-small-game/);
+  await expect(page.locator("#tap-score")).toHaveText("0");
+  await page.getByRole("button", { name: "A button" }).click();
+  await expect(page.locator("#tap-score")).toHaveText("1");
+
+  await page.getByRole("button", { name: "B button" }).click();
+  await expect(page.locator("body")).not.toHaveClass(/is-playing/);
+  await expect(page.locator(".game-library")).toBeVisible();
+});
+
 test("launcher and game adapt to phone rotation and viewport height changes", async ({
   page
 }) => {
@@ -215,7 +229,7 @@ test("game launcher uses square tiles and marks placeholders unavailable", async
   );
 
   expect(columnCount).toBe(4);
-  expect(tileSizes).toHaveLength(14);
+  expect(tileSizes).toHaveLength(15);
 
   for (const { width, height } of tileSizes) {
     expect(Math.abs(width - height)).toBeLessThanOrEqual(1);

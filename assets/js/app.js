@@ -12,6 +12,7 @@ const stageTitle = document.querySelector("#stage-title");
 const stageEyebrow = document.querySelector("#stage-eyebrow");
 const homeButton = document.querySelector("#home-button");
 const smallGameBackButton = document.querySelector("#small-game-back");
+const controllerButtons = document.querySelectorAll(".controller-button");
 const networkStatusEl = document.querySelector("#network-status");
 const refreshButton = document.querySelector("#refresh-button");
 const themeColorMeta = document.querySelector("#theme-color");
@@ -26,6 +27,7 @@ let activeResume = null;
 let hadServiceWorkerController = false;
 let isReloadingForUpdate = false;
 let isLaunchingGame = false;
+let lastFocusedGameControl = null;
 let lastLauncherGameId = null;
 let launcherScrollTop = 0;
 let reloadOnControllerChange = false;
@@ -150,8 +152,54 @@ function returnToLauncher() {
   resetStage();
 }
 
+function handleControllerButton(control) {
+  const controlEvent = new CustomEvent("minigames:control", {
+    bubbles: true,
+    cancelable: true,
+    detail: { control }
+  });
+
+  if (!gameStage.dispatchEvent(controlEvent)) {
+    return;
+  }
+
+  if (control === "b") {
+    if (document.body.classList.contains("is-playing")) {
+      returnToLauncher();
+    }
+
+    return;
+  }
+
+  if (!document.body.classList.contains("is-playing")) {
+    gameList.querySelector(".game-card:not(:disabled)")?.focus();
+    return;
+  }
+
+  const focusedControl = lastFocusedGameControl;
+
+  if (
+    focusedControl &&
+    gameStage.contains(focusedControl) &&
+    focusedControl.matches("button:not(:disabled)")
+  ) {
+    focusedControl.click();
+    return;
+  }
+
+  const primaryControl = gameStage.querySelector("#tap-target, #reaction-target");
+
+  if (primaryControl) {
+    primaryControl.click();
+    return;
+  }
+
+  gameStage.querySelector("button:not(:disabled)")?.focus();
+}
+
 function resetStage() {
   cleanupActiveGame();
+  lastFocusedGameControl = null;
   applyTheme(HOME_THEME);
   document.body.classList.remove("is-playing", "is-small-game");
   stageEyebrow.textContent = "Play area";
@@ -347,6 +395,14 @@ async function refreshApp() {
 
 homeButton.addEventListener("click", returnToLauncher);
 smallGameBackButton.addEventListener("click", returnToLauncher);
+gameStage.addEventListener("focusin", (event) => {
+  if (event.target.matches("button:not(:disabled)")) {
+    lastFocusedGameControl = event.target;
+  }
+});
+for (const button of controllerButtons) {
+  button.addEventListener("click", () => handleControllerButton(button.dataset.control));
+}
 refreshButton.addEventListener("click", () => {
   refreshApp().catch(() => window.location.reload());
 });
