@@ -54,6 +54,7 @@ body:not(.is-playing) {
 }
 
 body:not(.is-playing) .app-shell {
+  position: relative;
   width: 100vw;
   height: 100dvh;
   min-height: 100dvh;
@@ -65,6 +66,44 @@ body:not(.is-playing) .app-shell {
 
 body:not(.is-playing) .app-header h1 {
   color: #000;
+}
+
+.launcher-controls {
+  display: none;
+}
+
+body:not(.is-playing) .launcher-controls {
+  display: block;
+  pointer-events: none;
+}
+
+.launcher-control {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  height: auto;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.launcher-dpad {
+  bottom: calc(3.5dvh + 50px);
+  left: 5vw;
+  width: clamp(76px, 22vw, 190px);
+}
+
+.launcher-startselect {
+  bottom: 5.5dvh;
+  left: 50%;
+  width: clamp(90px, 22vw, 190px);
+  transform: translateX(-50%);
+}
+
+.launcher-buttons {
+  right: 5vw;
+  bottom: calc(3.5dvh + 50px);
+  width: clamp(84px, 23vw, 200px);
 }
 
 body::-webkit-scrollbar,
