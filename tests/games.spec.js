@@ -201,8 +201,13 @@ test("The Wheel edits prizes, locks settings while spinning, and announces a win
 
   const firstPrize = page.getByRole("textbox", { name: "Prize 1" });
   const pointer = page.locator(".wheel-pointer");
+  const aButton = page.getByRole("button", { name: "A button" });
   await expect(pointer).toHaveAttribute("data-prize-index", "0");
   await firstPrize.fill("Arcade Token");
+  await expect(aButton).toBeHidden();
+  await firstPrize.press("Enter");
+  await expect(firstPrize).not.toBeFocused();
+  await expect(aButton).toBeVisible();
   await page.getByRole("button", { name: "Add" }).click();
   await expect(page.getByRole("textbox", { name: "Prize 6" })).toBeVisible();
 

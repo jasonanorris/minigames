@@ -90,6 +90,10 @@ body:is(:not(.is-playing), .is-small-game) .launcher-controls {
   pointer-events: none;
 }
 
+body.is-small-game:has(:is(input, textarea, [contenteditable="true"]):focus) .launcher-controls {
+  display: none;
+}
+
 .launcher-control {
   position: absolute;
   z-index: 1;
@@ -977,7 +981,7 @@ body.is-small-game .app-header {
 .wheel-layout {
   display: grid;
   grid-template-columns: minmax(260px, 1.35fr) minmax(220px, .8fr);
-  align-items: center;
+  align-items: start;
   gap: clamp(18px, 4vw, 42px);
 }
 
@@ -985,7 +989,7 @@ body.is-small-game .app-header {
   position: relative;
   width: min(480px, 100%);
   aspect-ratio: 1;
-  place-self: center;
+  place-self: start center;
   filter: drop-shadow(0 20px 24px rgba(0, 0, 0, .35));
 }
 
@@ -1054,9 +1058,11 @@ body.is-small-game .app-header {
 }
 
 .wheel-settings {
+  display: grid;
+  min-height: 0;
   max-height: min(60vh, 520px);
   padding: 16px;
-  overflow: auto;
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: rgba(23, 36, 45, .76);
@@ -1092,7 +1098,13 @@ body.is-small-game .app-header {
 
 .wheel-prizes {
   display: grid;
+  max-height: min(250px, 36vh);
+  min-height: 0;
   gap: 7px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+  scrollbar-width: thin;
 }
 
 .wheel-prize-row {
@@ -1299,6 +1311,7 @@ body.is-small-game .app-header {
 
   .wheel-prizes {
     gap: 4px;
+    max-height: min(176px, 26dvh);
   }
 
   .wheel-prize-row {

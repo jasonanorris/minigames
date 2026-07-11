@@ -216,6 +216,14 @@ export function startTheWheel({ stage }) {
         prizes[index] = input.value.trim() || `Prize ${index + 1}`;
         drawWheel();
       });
+      input.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter") {
+          return;
+        }
+
+        event.preventDefault();
+        input.blur();
+      });
       row.querySelector("button").addEventListener("click", () => {
         prizes.splice(index, 1);
         renderPrizeInputs();
