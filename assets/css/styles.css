@@ -563,6 +563,15 @@ body.is-small-game .app-header {
   min-height: 0;
   padding: 12px;
   place-items: center;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.stage-content :is(input, textarea, [contenteditable="true"]) {
+  user-select: text;
+  -webkit-user-select: text;
+  -webkit-touch-callout: default;
 }
 
 .stage-content:has(.snake-game) {

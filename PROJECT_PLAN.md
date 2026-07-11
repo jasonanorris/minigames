@@ -79,11 +79,24 @@ minigames/
       styles.css
     js/
       app.js
+      version.js
       games/
         tap-race.js
+        reaction-time.js
+        memory-grid.js
+        quick-math.js
+        the-wheel.js
+        snake.js
     icons/
       icon-192.png
       icon-512.png
+    images/
+      retroHandheld3b.png
+      dpad.png
+      startselect.png
+      aButton.png
+      bButton.png
+      game.png
 ```
 
 ## Phase 1: App Shell
@@ -142,6 +155,7 @@ Create `sw.js` to cache the core app files.
 Create a small JavaScript registry for games.
 
 - [x] Each game should define an id, title, description, and start function
+- [x] Each playable game may declare `displayMode: "small"` or `displayMode: "full"`
 - [x] The home screen should render the list from the registry
 - [x] Selecting a game should mount it into the shared game area
 - [x] Games should be easy to add without rewriting the app shell
@@ -183,6 +197,7 @@ Make the app feel finished on mobile.
 - [x] Reliable service-worker update activation and reload handoff
 - [x] Android and browser Back navigation returns games to the launcher
 - [x] Prevent Android Back on the launcher from exposing a blank standalone page
+- [x] Re-arm the launcher Back guard after restored browser history states
 - [x] Preserve launcher scroll position and selected-game focus after returning
 - [x] Add touch feedback to game tiles without shifting the launcher grid
 - [x] Add contained momentum scrolling for the launcher on mobile
@@ -190,6 +205,22 @@ Make the app feel finished on mobile.
 - [x] Pause timed games when the app is backgrounded or the screen locks
 - Optional install prompt button, implemented without tracking
 - [x] Offline status indicator using browser connectivity events without probes
+- [x] Prevent text selection/copy-paste callouts inside the play area while preserving text selection in inputs
+- [x] Add handheld visual controls with image-based A/B buttons and decorative D-pad/start-select assets
+
+## Current Implementation Notes
+
+- The home screen uses the rounded handheld background image `retroHandheld3b.png`.
+- The app header stays inside the safe area while the background can extend behind camera cutouts.
+- The version number shown in the header comes from `assets/js/version.js`.
+- Use `npm run version:bump` when changing cached app assets so the service worker cache name advances.
+- Small game mode replaces the game library inside the main screen and shows a centered Back button below the display.
+- Full game mode uses the larger play area; Snake is currently full mode, while The Wheel and several quick games use small mode.
+- Primary mobile layout reference device: OnePlus 8T with a 6.55 in, 2400 x 1080, 20:9, ~402 ppi display. Expect an Android browser/PWA CSS viewport around 360 x 800 at DPR 3, depending on browser chrome and safe areas.
+- The Wheel defaults to `Yes`, `No`, and three `Try Again` prizes, supports editing prizes, spins with louder generated audio, changes the pointer color while spinning, and shows confetti plus a win horn.
+- Snake supports keyboard arrows, swipe controls, local best score, pause/resume lifecycle handling, and a slower starting speed.
+- Avoid broad text selection in gameplay surfaces on mobile because it can trigger copy/paste popups.
+- Keep generated Lighthouse profile folders out of commits.
 
 ## Phase 8: More Games
 
@@ -198,13 +229,15 @@ Validate the game registry and lifecycle with additional games.
 - [x] Reaction Time with randomized delay, early-tap detection, and local best time
 - [x] Memory Grid with shuffled pairs, move counting, and local best score
 - [x] Quick Math with timed questions, streaks, rising difficulty, and local best score
+- [x] The Wheel with editable prize slices, spin feedback, win modal, sound effects, and confetti
+- [x] Snake with full-screen board, swipe/keyboard controls, collision detection, and local best score
 
 ## Game Ideas
 
 Add ideas here using `- [ ] Game name - short description`. Check an idea off when
 it becomes playable.
 
-- [ ] Snake - steer, eat, and grow without hitting the walls or yourself
+- [x] Snake - steer, eat, and grow without hitting the walls or yourself
 - [ ] Tic Tac Toe - quick local matches against another player or simple AI
 - [ ] Simon - repeat an increasingly long color sequence
 - [ ] Word Mix - unscramble short words against a timer
@@ -224,6 +257,8 @@ it becomes playable.
 - [x] Check Reaction Time early taps and saved best time
 - [x] Check Memory Grid matching, restart behavior, and saved best score
 - [x] Check Quick Math scoring, timer, restart behavior, and saved best score
+- [x] Check The Wheel prize editing, spin lock state, winner modal, and small-game mode
+- [x] Check Snake launch, scoring, collision game-over, and full-game mode
 - [x] Run Lighthouse performance, accessibility, and best-practices audits
 
 ## Documentation and Trust
