@@ -1,7 +1,7 @@
 const DEFAULT_PRIZES = ["Yes", "No", "Try Again", "Try Again", "Try Again"];
 const COLORS = ["#ef476f", "#ffd166", "#06d6a0", "#118ab2", "#9b5de5", "#f78c6b", "#4cc9f0", "#90be6d"];
-const CLICK_VOLUME = 0.075;
-const HORN_VOLUME = 0.12;
+const CLICK_VOLUME = 0.22;
+const HORN_VOLUME = 0.28;
 const LANDING_RANDOMNESS = 0.72;
 
 export function startTheWheel({ stage }) {
@@ -85,15 +85,22 @@ export function startTheWheel({ stage }) {
     audioContext ||= new AudioContext();
     audioContext.resume().catch(() => { });
     const now = audioContext.currentTime;
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    oscillator.type = "triangle";
-    oscillator.frequency.setValueAtTime(620, now);
-    gain.gain.setValueAtTime(CLICK_VOLUME, now);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.035);
-    oscillator.connect(gain).connect(audioContext.destination);
-    oscillator.start(now);
-    oscillator.stop(now + 0.04);
+    const clickNotes = [
+      { frequency: 620, type: "square", volume: CLICK_VOLUME, duration: 0.05 },
+      { frequency: 1240, type: "triangle", volume: CLICK_VOLUME * 0.45, duration: 0.025 }
+    ];
+
+    for (const note of clickNotes) {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      oscillator.type = note.type;
+      oscillator.frequency.setValueAtTime(note.frequency, now);
+      gain.gain.setValueAtTime(note.volume, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + note.duration);
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start(now);
+      oscillator.stop(now + note.duration + 0.01);
+    }
   }
 
   function playWinHorn() {
@@ -114,6 +121,10 @@ export function startTheWheel({ stage }) {
       oscillator.frequency.setValueAtTime(frequency, noteStart);
       gain.gain.setValueAtTime(0.0001, noteStart);
       gain.gain.exponentialRampToValueAtTime(HORN_VOLUME, noteStart + 0.018);
+      gain.gain.setValueAtTime(
+        HORN_VOLUME,
+        noteStart + (index === notes.length - 1 ? 0.11 : 0.05)
+      );
       gain.gain.exponentialRampToValueAtTime(
         0.0001,
         noteStart + (index === notes.length - 1 ? 0.42 : 0.16)
