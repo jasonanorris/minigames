@@ -1121,6 +1121,9 @@ body.is-small-game .app-header {
 
 .wheel-new-prize {
   min-height: 0;
+}
+
+.wheel-new-prize:not(:empty) {
   margin-bottom: 8px;
 }
 
@@ -1326,7 +1329,7 @@ body.is-small-game .app-header {
 
   .wheel-wrap {
     width: min(320px, 78vw, 38dvh);
-    margin-bottom: 8px;
+    margin-bottom: 2px;
     place-self: start center;
   }
 
@@ -1335,7 +1338,7 @@ body.is-small-game .app-header {
     height: 100%;
     max-height: none;
     min-height: 0;
-    padding: 0 8px 8px;
+    padding: 0 8px 4px;
     overflow: hidden;
     place-self: stretch;
     border: none;
@@ -1344,7 +1347,7 @@ body.is-small-game .app-header {
 
   .wheel-settings-heading {
     gap: 8px;
-    margin-bottom: 6px;
+    margin-bottom: 2px;
   }
 
   .wheel-settings h3 {
@@ -1355,7 +1358,11 @@ body.is-small-game .app-header {
     padding: 5px;
     padding-top: 0px;
     padding-bottom: 0px;
-    margin-top: 3px;
+    margin-top: 0;
+  }
+
+  .wheel-new-prize:not(:empty) {
+    margin-bottom: 4px;
   }
 
   .wheel-prizes {
