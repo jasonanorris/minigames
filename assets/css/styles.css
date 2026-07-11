@@ -1105,6 +1105,14 @@ body.is-small-game .app-header {
   overscroll-behavior: contain;
   padding-right: 4px;
   scrollbar-width: thin;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.wheel-prize-row {
+  touch-action: pan-y;
 }
 
 .wheel-prize-row {
@@ -1323,7 +1331,7 @@ body.is-small-game .app-header {
 
   .wheel-prizes {
     gap: 4px;
-    max-height: min(176px, 26dvh);
+    max-height: min(224px, 30dvh);
   }
 
   .wheel-prize-row {
