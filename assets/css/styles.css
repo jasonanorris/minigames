@@ -277,11 +277,36 @@ body:is(:not(.is-playing), .is-small-game) .app-header {
 }
 
 .app-version {
+  display: inline-grid;
+  min-height: 32px;
+  place-items: center;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
   color: var(--muted);
   font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
   font-weight: 750;
+  line-height: 1;
   white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-version:focus-visible,
+.app-version:hover {
+  outline: none;
+  color: var(--text);
+}
+
+.app-version.is-checking {
+  opacity: 0.62;
+}
+
+.app-version.is-update-ready {
+  color: var(--cyan);
+  text-shadow: 0 0 10px rgba(61, 214, 208, 0.45);
 }
 
 .eyebrow {
@@ -546,20 +571,6 @@ body.is-small-game .app-header {
 .icon-button:hover {
   outline: none;
   border-color: var(--accent);
-}
-
-.refresh-button {
-  flex: 0 0 auto;
-}
-
-.refresh-button.is-checking {
-  opacity: 0.62;
-}
-
-.refresh-button.is-update-ready {
-  border-color: var(--cyan);
-  color: var(--cyan);
-  box-shadow: 0 0 0 3px rgba(61, 214, 208, 0.14);
 }
 
 .stage-content {

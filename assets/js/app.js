@@ -14,7 +14,6 @@ const homeButton = document.querySelector("#home-button");
 const smallGameBackButton = document.querySelector("#small-game-back");
 const controllerButtons = document.querySelectorAll(".controller-button");
 const networkStatusEl = document.querySelector("#network-status");
-const refreshButton = document.querySelector("#refresh-button");
 const themeColorMeta = document.querySelector("#theme-color");
 const versionEl = document.querySelector("#app-version");
 const gameLibrary = document.querySelector(".game-library");
@@ -316,11 +315,11 @@ function watchForServiceWorkerUpdate(registration) {
 }
 
 function markUpdateReady() {
-  refreshButton.classList.remove("is-checking");
-  refreshButton.classList.add("is-update-ready");
-  refreshButton.disabled = false;
-  refreshButton.setAttribute("aria-label", "Update app");
-  refreshButton.title = "Update available";
+  versionEl.classList.remove("is-checking");
+  versionEl.classList.add("is-update-ready");
+  versionEl.disabled = false;
+  versionEl.setAttribute("aria-label", "Update app");
+  versionEl.title = "Update available";
 }
 
 function activateWaitingWorker(registration) {
@@ -369,8 +368,8 @@ function preventPullToRefreshWhilePlaying() {
 }
 
 async function refreshApp() {
-  refreshButton.disabled = true;
-  refreshButton.classList.add("is-checking");
+  versionEl.disabled = true;
+  versionEl.classList.add("is-checking");
 
   if (!("serviceWorker" in navigator)) {
     window.location.reload();
@@ -416,7 +415,7 @@ gameStage.addEventListener("focusin", (event) => {
 for (const button of controllerButtons) {
   button.addEventListener("click", () => handleControllerButton(button.dataset.control));
 }
-refreshButton.addEventListener("click", () => {
+versionEl.addEventListener("click", () => {
   refreshApp().catch(() => window.location.reload());
 });
 window.addEventListener("online", updateNetworkStatus);

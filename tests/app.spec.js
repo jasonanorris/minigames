@@ -271,7 +271,7 @@ test("manifest and service worker are available", async ({ page, request }) => {
   expect(serviceWorker).toContain("hasLegacyCache");
 
   await page.goto("/");
-  await expect(page.locator("#refresh-button")).toHaveAttribute("title", "Refresh app");
+  await expect(page.locator("#app-version")).toHaveAttribute("title", "Refresh app");
   await expect
     .poll(() => page.evaluate(() => navigator.serviceWorker.getRegistration().then(Boolean)))
     .toBe(true);
