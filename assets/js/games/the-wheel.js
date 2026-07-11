@@ -1,6 +1,6 @@
 const DEFAULT_PRIZES = ["Yes", "No", "Try Again", "Try Again", "Try Again"];
 const COLORS = ["#ef476f", "#ffd166", "#06d6a0", "#118ab2", "#9b5de5", "#f78c6b", "#4cc9f0", "#90be6d"];
-const CLICK_VOLUME = 0.045;
+const CLICK_VOLUME = 0.075;
 const HORN_VOLUME = 0.12;
 const LANDING_RANDOMNESS = 0.72;
 
