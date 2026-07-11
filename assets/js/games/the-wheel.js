@@ -33,6 +33,7 @@ export function startTheWheel({ stage }) {
             <div><h3 id="wheel-settings-title">Prizes</h3></div>
             <button class="wheel-add" id="wheel-add" type="button">+ Add</button>
           </div>
+          <div class="wheel-new-prize" id="wheel-new-prize"></div>
           <div class="wheel-prizes" id="wheel-prizes"></div>
           <p class="wheel-hint">Choose 2–12 prizes, then tap the wheel.</p>
         </section>
@@ -52,6 +53,7 @@ export function startTheWheel({ stage }) {
   const pointer = stage.querySelector(".wheel-pointer");
   const context = canvas.getContext("2d");
   const prizeList = stage.querySelector("#wheel-prizes");
+  const newPrizeSlot = stage.querySelector("#wheel-new-prize");
   const addButton = stage.querySelector("#wheel-add");
   const modal = stage.querySelector("#win-modal");
   const wonPrize = stage.querySelector("#win-prize");
@@ -210,6 +212,7 @@ export function startTheWheel({ stage }) {
 
   function renderPrizeInputs() {
     prizeList.innerHTML = "";
+    newPrizeSlot.innerHTML = "";
     prizes.forEach((prize, index) => {
       const row = document.createElement("div");
       row.className = "wheel-prize-row";
@@ -249,6 +252,9 @@ export function startTheWheel({ stage }) {
       prizes.push(input.value.trim() || `Prize ${index + 1}`);
       renderPrizeInputs();
       drawWheel();
+      window.requestAnimationFrame(() => {
+        prizeList.scrollTop = prizeList.scrollHeight;
+      });
     }
 
     cancelButton.addEventListener("pointerdown", (event) => {
@@ -266,9 +272,8 @@ export function startTheWheel({ stage }) {
       commitPrize();
     });
     input.addEventListener("blur", commitPrize);
-    prizeList.append(row);
+    newPrizeSlot.append(row);
     input.focus({ preventScroll: true });
-    prizeList.scrollTop = prizeList.scrollHeight;
   }
 
   function spin() {
@@ -310,8 +315,9 @@ export function startTheWheel({ stage }) {
     if (isSpinning || isAddingPrize || prizes.length >= 12) return;
     isAddingPrize = true;
     renderPrizeInputs();
-    prizeList.scrollTop = prizeList.scrollHeight;
   });
+  prizeList.addEventListener("touchstart", (event) => event.stopPropagation(), { passive: true });
+  prizeList.addEventListener("touchmove", (event) => event.stopPropagation(), { passive: true });
   againButton.addEventListener("click", closeModal);
   modal.addEventListener("click", (event) => { if (event.target === modal) closeModal(); });
   stage.addEventListener("minigames:control", (event) => {
