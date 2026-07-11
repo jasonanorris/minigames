@@ -243,12 +243,22 @@ test("Wordle accepts guesses and colors submitted rows", async ({ page }) => {
   await expect(page.locator("#wordle-streak")).toHaveText("0");
   await expect(page.locator("#wordle-best-streak")).toHaveText("0");
   await expect(page.locator("#wordle-message")).toHaveText("Guess the 5-letter word.");
+  await expect(page.locator(".wordle-tile.is-active")).toHaveCount(1);
+  await expect(page.locator(".wordle-tile.is-active")).toHaveAttribute("data-column", "0");
+
+  const wordleFitsDisplay = await page.evaluate(() => {
+    const stageContent = document.querySelector(".stage-content").getBoundingClientRect();
+    const wordleGame = document.querySelector(".wordle-game").getBoundingClientRect();
+    return wordleGame.top >= stageContent.top && wordleGame.bottom <= stageContent.bottom;
+  });
+  expect(wordleFitsDisplay).toBe(true);
 
   for (const letter of "ZZZZZ") {
     await page.getByRole("button", { name: letter, exact: true }).click();
   }
 
   await expect(page.locator("#wordle-message")).toHaveText("Not in the arcade dictionary.");
+  await expect(page.locator(".wordle-tile.is-active")).toHaveAttribute("data-column", "4");
   await expect(page.locator(".wordle-tile.is-absent, .wordle-tile.is-present, .wordle-tile.is-correct")).toHaveCount(0);
   await expect
     .poll(() =>
@@ -259,6 +269,8 @@ test("Wordle accepts guesses and colors submitted rows", async ({ page }) => {
   for (let index = 0; index < 5; index += 1) {
     await page.getByRole("button", { name: "⌫" }).click();
   }
+
+  await expect(page.locator(".wordle-tile.is-active")).toHaveAttribute("data-column", "0");
 
   for (const letter of "APPLE") {
     await page.getByRole("button", { name: letter, exact: true }).click();

@@ -384,6 +384,8 @@ export function startWordle({ stage }) {
 
       board.append(row);
     }
+
+    updateCurrentTiles();
   }
 
   function renderKeyboard() {
@@ -415,11 +417,20 @@ export function startWordle({ stage }) {
   }
 
   function updateCurrentTiles() {
+    clearActiveTiles();
+
     for (let columnIndex = 0; columnIndex < WORD_LENGTH; columnIndex += 1) {
       const tile = getTile(currentRow, columnIndex);
       tile.textContent = currentGuess[columnIndex] || "";
       tile.classList.toggle("is-filled", columnIndex < currentGuess.length);
     }
+
+    if (isFinished) {
+      return;
+    }
+
+    const activeColumn = Math.min(currentGuess.length, WORD_LENGTH - 1);
+    getTile(currentRow, activeColumn)?.classList.add("is-active");
   }
 
   function submitGuess() {
@@ -436,10 +447,12 @@ export function startWordle({ stage }) {
 
     if (!VALID_GUESSES.has(currentGuess)) {
       setMessage("Not in the arcade dictionary.");
+      updateCurrentTiles();
       shakeRow();
       return;
     }
 
+    clearActiveTiles();
     const result = scoreGuess(currentGuess, answer);
 
     result.forEach((status, columnIndex) => {
@@ -534,6 +547,12 @@ export function startWordle({ stage }) {
     renderBoard();
     updateKeyboard();
     stage.focus();
+  }
+
+  function clearActiveTiles() {
+    for (const tile of board.querySelectorAll(".wordle-tile.is-active")) {
+      tile.classList.remove("is-active");
+    }
   }
 
   function updateKeyboard() {
