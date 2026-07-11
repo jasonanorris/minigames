@@ -565,6 +565,10 @@ body.is-small-game .app-header {
   place-items: center;
 }
 
+.stage-content:has(.snake-game) {
+  align-items: stretch;
+}
+
 .empty-state {
   width: min(28rem, 100%);
   margin: 0;
@@ -892,6 +896,69 @@ body.is-small-game .app-header {
   display: grid;
   width: min(34rem, 100%);
   gap: 12px;
+}
+
+.snake-game {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: 12px;
+  place-items: center;
+}
+
+.snake-score-grid .score-tile {
+  min-height: 56px;
+}
+
+.snake-score-grid .score-tile strong {
+  font-size: clamp(1.15rem, 6vw, 1.9rem);
+}
+
+.snake-board {
+  display: grid;
+  width: min(100%, 78dvh, 640px);
+  max-height: 100%;
+  aspect-ratio: 1;
+  place-self: center;
+  grid-template-columns: repeat(15, 1fr);
+  grid-template-rows: repeat(15, 1fr);
+  gap: 2px;
+  padding: 8px;
+  border: 6px solid #1d3928;
+  border-radius: 12px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px),
+    #0b1710;
+  background-size: calc(100% / 15) calc(100% / 15);
+  box-shadow: inset 0 0 0 3px rgba(144, 190, 109, .22), 0 18px 28px rgba(0, 0, 0, .3);
+  touch-action: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.snake-cell {
+  min-width: 0;
+  min-height: 0;
+  border-radius: 4px;
+}
+
+.snake-cell.is-snake,
+.snake-cell.is-head {
+  background: #90be6d;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .28);
+}
+
+.snake-cell.is-head {
+  background: #06d6a0;
+}
+
+.snake-cell.is-food {
+  border-radius: 50%;
+  background: #ef476f;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, .2), 0 0 10px rgba(239, 71, 111, .8);
 }
 
 .wheel-game {

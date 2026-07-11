@@ -3,9 +3,9 @@ import { startReactionTime } from "./reaction-time.js";
 import { startMemoryGrid } from "./memory-grid.js";
 import { startQuickMath } from "./quick-math.js";
 import { startTheWheel } from "./the-wheel.js";
+import { startSnake } from "./snake.js";
 
 const placeholderGames = [
-  { id: "snake", title: "Snake", mark: "S" },
   { id: "tic-tac-toe", title: "Tic Tac Toe", mark: "XO" },
   { id: "simon", title: "Simon", mark: "1234" },
   { id: "word-mix", title: "Word Mix", mark: "ABC" },
@@ -88,6 +88,20 @@ export const games = [
     status: "Playable",
     theme: { color: "#24142d", tint: "rgba(239, 71, 111, 0.2)", tintSecondary: "rgba(255, 209, 102, 0.14)" },
     start: startTheWheel
+  },
+  {
+    id: "snake",
+    title: "Snake",
+    mark: "S",
+    displayMode: "full",
+    description: "Eat snacks, grow longer, and avoid the walls.",
+    status: "Playable",
+    theme: {
+      color: "#10251a",
+      tint: "rgba(144, 190, 109, 0.2)",
+      tintSecondary: "rgba(6, 214, 160, 0.12)"
+    },
+    start: startSnake
   },
   ...placeholderGames
 ];

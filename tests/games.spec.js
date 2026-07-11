@@ -213,6 +213,24 @@ test("The Wheel edits prizes, locks settings while spinning, and announces a win
   await expect(firstPrize).toBeEnabled();
 });
 
+test("Snake starts, scores food, and ends on collision", async ({ page }) => {
+  await page.clock.install();
+  await page.goto("/");
+  await launchGame(page, "Snake");
+  await expect(page.locator("body")).not.toHaveClass(/is-small-game/);
+  await expect(page.locator("#snake-score")).toHaveText("0");
+  await expect(page.locator("[data-snake='head']")).toHaveCount(1);
+  await expect(page.locator("[data-food='true']")).toHaveCount(1);
+
+  await page.getByRole("button", { name: "Start" }).click();
+  await page.clock.runFor(800);
+  await expect(page.locator("#snake-score")).toHaveText("1");
+
+  await page.clock.runFor(900);
+  await expect(page.locator("#snake-message")).toContainText("Game over.");
+  await expect(page.getByRole("button", { name: "Play again" })).toBeVisible();
+});
+
 async function launchGame(page, name) {
   await page.getByRole("button", { name, exact: true }).click();
   await expect(page.locator("body")).toHaveClass(/is-playing/);

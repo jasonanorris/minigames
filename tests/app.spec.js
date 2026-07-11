@@ -251,8 +251,8 @@ test("game launcher uses square tiles and marks placeholders unavailable", async
     expect(Math.abs(width - height)).toBeLessThanOrEqual(1);
   }
 
-  await expect(page.locator(".game-card.is-placeholder")).toHaveCount(10);
-  await expect(page.getByRole("button", { name: "Snake, coming soon" })).toBeDisabled();
+  await expect(page.locator(".game-card.is-placeholder")).toHaveCount(9);
+  await expect(page.getByRole("button", { name: "Snake", exact: true })).toBeEnabled();
 });
 
 test("manifest and service worker are available", async ({ page, request }) => {
