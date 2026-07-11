@@ -911,6 +911,153 @@ body.is-small-game .app-header {
   gap: 12px;
 }
 
+.wordle-game {
+  display: grid;
+  width: min(34rem, 100%);
+  height: 100%;
+  min-height: 0;
+  grid-template-rows: minmax(0, 1fr) auto auto auto;
+  gap: 10px;
+  place-items: center;
+}
+
+.wordle-board {
+  display: grid;
+  width: min(315px, 100%, 46dvh);
+  min-height: 0;
+  gap: 5px;
+  align-self: end;
+}
+
+.wordle-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.wordle-row.is-shaking {
+  animation: wordle-shake 260ms ease-in-out;
+}
+
+.wordle-tile {
+  display: grid;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 2px solid #41535d;
+  border-radius: 7px;
+  background: #101820;
+  color: #fff;
+  font-size: clamp(1.25rem, 7vw, 2rem);
+  font-weight: 950;
+  line-height: 1;
+  text-transform: uppercase;
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, .22);
+}
+
+.wordle-tile.is-filled {
+  border-color: #6f8490;
+}
+
+.wordle-tile.is-correct {
+  border-color: #5fa35f;
+  background: #4f8f4f;
+}
+
+.wordle-tile.is-present {
+  border-color: #caa745;
+  background: #b59f3b;
+}
+
+.wordle-tile.is-absent {
+  border-color: #3f4b52;
+  background: #3a434a;
+}
+
+.wordle-message {
+  min-height: 1.35em;
+  font-size: .9rem;
+  font-weight: 800;
+}
+
+.wordle-keyboard {
+  display: grid;
+  width: min(420px, 100%);
+  gap: 5px;
+  touch-action: manipulation;
+}
+
+.wordle-key-row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.wordle-key {
+  display: grid;
+  min-width: 0;
+  height: 42px;
+  flex: 1 1 0;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: #596773;
+  color: #fff;
+  font-size: .8rem;
+  font-weight: 950;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wordle-key.is-wide {
+  flex: 1.45 1 0;
+  font-size: .68rem;
+}
+
+.wordle-key.is-correct {
+  background: #4f8f4f;
+}
+
+.wordle-key.is-present {
+  background: #b59f3b;
+}
+
+.wordle-key.is-absent {
+  background: #3a434a;
+  color: #cbd5dc;
+}
+
+.wordle-key:focus-visible {
+  outline: 3px solid rgba(61, 214, 208, .5);
+  outline-offset: 2px;
+}
+
+.wordle-key:active {
+  transform: translateY(1px);
+}
+
+.wordle-restart {
+  min-height: 34px;
+}
+
+@keyframes wordle-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+
 .snake-game {
   display: grid;
   width: 100%;

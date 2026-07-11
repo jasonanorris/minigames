@@ -4,6 +4,7 @@ import { startMemoryGrid } from "./memory-grid.js";
 import { startQuickMath } from "./quick-math.js";
 import { startTheWheel } from "./the-wheel.js";
 import { startSnake } from "./snake.js";
+import { startWordle } from "./wordle.js";
 
 const placeholderGames = [
   { id: "tic-tac-toe", title: "Tic Tac Toe", mark: "XO" },
@@ -102,6 +103,20 @@ export const games = [
       tintSecondary: "rgba(6, 214, 160, 0.12)"
     },
     start: startSnake
+  },
+  {
+    id: "wordle",
+    title: "Wordle",
+    mark: "WORD",
+    displayMode: "small",
+    description: "Guess the hidden five-letter word in six tries.",
+    status: "Playable",
+    theme: {
+      color: "#17202a",
+      tint: "rgba(144, 190, 109, 0.2)",
+      tintSecondary: "rgba(247, 201, 72, 0.12)"
+    },
+    start: startWordle
   },
   ...placeholderGames
 ];

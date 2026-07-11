@@ -245,7 +245,7 @@ test("game launcher uses square tiles and marks placeholders unavailable", async
   );
 
   expect(columnCount).toBe(4);
-  expect(tileSizes).toHaveLength(15);
+  expect(tileSizes).toHaveLength(16);
 
   for (const { width, height } of tileSizes) {
     expect(Math.abs(width - height)).toBeLessThanOrEqual(1);

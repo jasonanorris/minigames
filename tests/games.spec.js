@@ -230,6 +230,34 @@ test("The Wheel manages prizes, locks settings while spinning, and announces a w
   await expect(page.getByRole("button", { name: "Remove prize 1" })).toBeEnabled();
 });
 
+test("Wordle accepts guesses and colors submitted rows", async ({ page }) => {
+  await page.goto("/");
+  await launchGame(page, "Wordle");
+  await expect(page.locator("body")).toHaveClass(/is-small-game/);
+  await expect(page.locator("#small-game-back")).toBeVisible();
+  await expect(page.locator(".wordle-tile")).toHaveCount(30);
+  await expect(page.locator(".wordle-key")).toHaveCount(28);
+
+  for (const letter of "ZZZZZ") {
+    await page.getByRole("button", { name: letter, exact: true }).click();
+  }
+
+  await page.getByRole("button", { name: "Enter" }).click();
+  await expect(page.locator("#wordle-message")).toHaveText("Not in this tiny arcade dictionary.");
+  await expect(page.locator(".wordle-tile.is-absent, .wordle-tile.is-present, .wordle-tile.is-correct")).toHaveCount(0);
+
+  for (let index = 0; index < 5; index += 1) {
+    await page.getByRole("button", { name: "⌫" }).click();
+  }
+
+  for (const letter of "APPLE") {
+    await page.getByRole("button", { name: letter, exact: true }).click();
+  }
+
+  await page.getByRole("button", { name: "Enter" }).click();
+  await expect(page.locator(".wordle-row").first().locator(".wordle-tile.is-absent, .wordle-tile.is-present, .wordle-tile.is-correct")).toHaveCount(5);
+});
+
 test("Snake starts, scores food, and ends on collision", async ({ page }) => {
   await page.clock.install();
   await page.goto("/");
