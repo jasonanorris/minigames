@@ -108,7 +108,7 @@ export const games = [
     id: "wordle",
     title: "Wordle",
     mark: "WORD",
-    displayMode: "small",
+    displayMode: "medium",
     description: "Guess the hidden five-letter word in six tries.",
     status: "Playable",
     theme: {

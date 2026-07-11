@@ -96,13 +96,20 @@ function selectGame(game, { updateHistory = true } = {}) {
 
   cleanupActiveGame();
   applyTheme(game.theme);
-  const isSmallGame = game.displayMode === "small";
+  const displayMode = game.displayMode || "full";
+  const isSmallGame = displayMode === "small";
+  const isMediumGame = displayMode === "medium";
   document.body.classList.toggle("is-small-game", isSmallGame);
+  document.body.classList.toggle("is-medium-game", isMediumGame);
   document.body.classList.add("is-playing");
-  stageEyebrow.textContent = isSmallGame ? "Small game" : "Play area";
+  stageEyebrow.textContent = isSmallGame
+    ? "Small game"
+    : isMediumGame
+      ? "Medium game"
+      : "Play area";
   stageTitle.textContent = game.title;
-  homeButton.hidden = isSmallGame;
-  smallGameBackButton.hidden = !isSmallGame;
+  homeButton.hidden = isSmallGame || isMediumGame;
+  smallGameBackButton.hidden = !(isSmallGame || isMediumGame);
   gameStage.innerHTML = "";
 
   const lifecycle = game.start({
@@ -200,7 +207,7 @@ function resetStage() {
   cleanupActiveGame();
   lastFocusedGameControl = null;
   applyTheme(HOME_THEME);
-  document.body.classList.remove("is-playing", "is-small-game");
+  document.body.classList.remove("is-playing", "is-small-game", "is-medium-game");
   stageEyebrow.textContent = "Play area";
   stageTitle.textContent = "Choose a game";
   homeButton.hidden = true;

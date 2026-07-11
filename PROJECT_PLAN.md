@@ -155,7 +155,8 @@ Create `sw.js` to cache the core app files.
 Create a small JavaScript registry for games.
 
 - [x] Each game should define an id, title, description, and start function
-- [x] Each playable game may declare `displayMode: "small"` or `displayMode: "full"`
+- [x] Each playable game may declare `displayMode: "small"`, `displayMode: "medium"`, or `displayMode: "full"`
+- [x] Medium games use the handheld display shell with the centered Back button, but hide dpad/start-select/A/B controls and reserve more height for the game display; Wordle uses medium mode
 - [x] The home screen should render the list from the registry
 - [x] Selecting a game should mount it into the shared game area
 - [x] Games should be easy to add without rewriting the app shell

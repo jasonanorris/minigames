@@ -233,8 +233,11 @@ test("The Wheel manages prizes, locks settings while spinning, and announces a w
 test("Wordle accepts guesses and colors submitted rows", async ({ page }) => {
   await page.goto("/");
   await launchGame(page, "Wordle");
-  await expect(page.locator("body")).toHaveClass(/is-small-game/);
+  await expect(page.locator("body")).toHaveClass(/is-medium-game/);
+  await expect(page.locator("body")).not.toHaveClass(/is-small-game/);
   await expect(page.locator("#small-game-back")).toBeVisible();
+  await expect(page.locator(".launcher-controls")).toBeHidden();
+  await expect(page.getByRole("button", { name: "A button" })).toBeHidden();
   await expect(page.locator(".wordle-tile")).toHaveCount(30);
   await expect(page.locator(".wordle-key")).toHaveCount(27);
   await expect(page.locator("#wordle-streak")).toHaveText("0");
@@ -324,6 +327,7 @@ test("Snake starts, scores food, and ends on collision", async ({ page }) => {
   await page.goto("/");
   await launchGame(page, "Snake");
   await expect(page.locator("body")).not.toHaveClass(/is-small-game/);
+  await expect(page.locator("body")).not.toHaveClass(/is-medium-game/);
   await expect(page.locator("#snake-score")).toHaveText("0");
   await expect(page.locator("[data-snake='head']")).toHaveCount(1);
   await expect(page.locator("[data-food='true']")).toHaveCount(1);
