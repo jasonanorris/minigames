@@ -29,7 +29,7 @@ export function startTheWheel({ stage }) {
         </div>
         <section class="wheel-settings" aria-labelledby="wheel-settings-title">
           <div class="wheel-settings-heading">
-            <div><span class="score-label">Set the stakes</span><h3 id="wheel-settings-title">Prizes</h3></div>
+            <div><h3 id="wheel-settings-title">Prizes</h3></div>
             <button class="wheel-add" id="wheel-add" type="button">+ Add</button>
           </div>
           <div class="wheel-prizes" id="wheel-prizes"></div>
@@ -83,7 +83,7 @@ export function startTheWheel({ stage }) {
     if (!AudioContext) return;
 
     audioContext ||= new AudioContext();
-    audioContext.resume().catch(() => {});
+    audioContext.resume().catch(() => { });
     const now = audioContext.currentTime;
     const oscillator = audioContext.createOscillator();
     const gain = audioContext.createGain();
@@ -102,7 +102,7 @@ export function startTheWheel({ stage }) {
     if (!AudioContext) return;
 
     audioContext ||= new AudioContext();
-    audioContext.resume().catch(() => {});
+    audioContext.resume().catch(() => { });
     const start = audioContext.currentTime;
     const notes = [523.25, 659.25, 783.99, 1046.5];
 
@@ -270,7 +270,7 @@ export function startTheWheel({ stage }) {
       window.clearTimeout(spinTimer);
       window.clearTimeout(confettiTimer);
       window.cancelAnimationFrame(spinFrame);
-      audioContext?.close().catch(() => {});
+      audioContext?.close().catch(() => { });
     }
   };
 }
