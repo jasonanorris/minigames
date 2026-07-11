@@ -208,22 +208,8 @@ export function startTheWheel({ stage }) {
     prizes.forEach((prize, index) => {
       const row = document.createElement("div");
       row.className = "wheel-prize-row";
-      row.innerHTML = `<span style="--prize-color:${COLORS[index % COLORS.length]}">${index + 1}</span><input type="text" maxlength="32" aria-label="Prize ${index + 1}" value=""><button type="button" aria-label="Remove prize ${index + 1}" ${prizes.length <= 2 || isSpinning ? "disabled" : ""}>×</button>`;
-      const input = row.querySelector("input");
-      input.value = prize;
-      input.disabled = isSpinning;
-      input.addEventListener("input", () => {
-        prizes[index] = input.value.trim() || `Prize ${index + 1}`;
-        drawWheel();
-      });
-      input.addEventListener("keydown", (event) => {
-        if (event.key !== "Enter") {
-          return;
-        }
-
-        event.preventDefault();
-        input.blur();
-      });
+      row.innerHTML = `<span style="--prize-color:${COLORS[index % COLORS.length]}">${index + 1}</span><strong class="wheel-prize-text"></strong><button type="button" aria-label="Remove prize ${index + 1}" ${prizes.length <= 2 || isSpinning ? "disabled" : ""}>×</button>`;
+      row.querySelector(".wheel-prize-text").textContent = prize;
       row.querySelector("button").addEventListener("click", () => {
         prizes.splice(index, 1);
         renderPrizeInputs();

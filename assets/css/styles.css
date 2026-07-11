@@ -1126,7 +1126,9 @@ body.is-small-game .app-header {
   font-weight: 900;
 }
 
-.wheel-prize-row input {
+.wheel-prize-text {
+  display: flex;
+  align-items: center;
   min-width: 0;
   height: 38px;
   padding: 0 10px;
@@ -1134,11 +1136,10 @@ body.is-small-game .app-header {
   border-radius: 6px;
   background: #101820;
   color: var(--text);
-}
-
-.wheel-prize-row input:focus {
-  outline: 2px solid var(--cyan);
-  border-color: transparent;
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .wheel-prize-row button {
@@ -1324,7 +1325,7 @@ body.is-small-game .app-header {
     height: 22px;
   }
 
-  .wheel-prize-row input {
+  .wheel-prize-text {
     height: 32px;
     padding: 0 8px;
   }

@@ -190,7 +190,7 @@ test("Quick Math scores answers, saves its best, and restarts", async ({ page })
   await expect(page.locator(".math-answer:enabled")).toHaveCount(4);
 });
 
-test("The Wheel edits prizes, locks settings while spinning, and announces a winner", async ({
+test("The Wheel manages prizes, locks settings while spinning, and announces a winner", async ({
   page
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -199,23 +199,26 @@ test("The Wheel edits prizes, locks settings while spinning, and announces a win
   await expect(page.locator("body")).toHaveClass(/is-small-game/);
   await expect(page.locator("#small-game-back")).toBeVisible();
 
-  const firstPrize = page.getByRole("textbox", { name: "Prize 1" });
   const pointer = page.locator(".wheel-pointer");
-  const aButton = page.getByRole("button", { name: "A button" });
   await expect(pointer).toHaveAttribute("data-prize-index", "0");
-  await firstPrize.fill("Arcade Token");
-  await expect(aButton).toBeHidden();
-  await firstPrize.press("Enter");
-  await expect(firstPrize).not.toBeFocused();
-  await expect(aButton).toBeVisible();
+  await expect(page.locator(".wheel-prize-text")).toHaveText([
+    "Yes",
+    "No",
+    "Try Again",
+    "Try Again",
+    "Try Again"
+  ]);
   await page.getByRole("button", { name: "Add" }).click();
-  await expect(page.getByRole("textbox", { name: "Prize 6" })).toBeVisible();
+  await expect(page.locator(".wheel-prize-text")).toHaveCount(6);
+  await expect(page.locator(".wheel-prize-text").last()).toHaveText("Prize 6");
+  await page.getByRole("button", { name: "Remove prize 6" }).click();
+  await expect(page.locator(".wheel-prize-text")).toHaveCount(5);
 
   await page.getByRole("button", { name: "Spin the prize wheel" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(page.locator("#win-prize")).not.toBeEmpty();
   await expect(pointer).toHaveAttribute("data-prize-index", /^\d+$/);
-  await expect(firstPrize).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Remove prize 1" })).toBeEnabled();
 });
 
 test("Snake starts, scores food, and ends on collision", async ({ page }) => {
