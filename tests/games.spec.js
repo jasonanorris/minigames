@@ -243,8 +243,13 @@ test("Wordle accepts guesses and colors submitted rows", async ({ page }) => {
   }
 
   await page.getByRole("button", { name: "Enter" }).click();
-  await expect(page.locator("#wordle-message")).toHaveText("Not in this tiny arcade dictionary.");
+  await expect(page.locator("#wordle-message")).toHaveText("Not in the arcade dictionary.");
   await expect(page.locator(".wordle-tile.is-absent, .wordle-tile.is-present, .wordle-tile.is-correct")).toHaveCount(0);
+  await expect
+    .poll(() =>
+      page.evaluate(() => JSON.parse(localStorage.getItem("minigames.wordle.usedAnswers") || "[]").length)
+    )
+    .toBe(1);
 
   for (let index = 0; index < 5; index += 1) {
     await page.getByRole("button", { name: "⌫" }).click();
