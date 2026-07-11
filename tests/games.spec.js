@@ -236,14 +236,15 @@ test("Wordle accepts guesses and colors submitted rows", async ({ page }) => {
   await expect(page.locator("body")).toHaveClass(/is-small-game/);
   await expect(page.locator("#small-game-back")).toBeVisible();
   await expect(page.locator(".wordle-tile")).toHaveCount(30);
-  await expect(page.locator(".wordle-key")).toHaveCount(28);
+  await expect(page.locator(".wordle-key")).toHaveCount(27);
+  await expect(page.locator("#wordle-streak")).toHaveText("0");
+  await expect(page.locator("#wordle-best-streak")).toHaveText("0");
   await expect(page.locator("#wordle-message")).toHaveText("Guess the 5-letter word.");
 
   for (const letter of "ZZZZZ") {
     await page.getByRole("button", { name: letter, exact: true }).click();
   }
 
-  await page.getByRole("button", { name: "Enter" }).click();
   await expect(page.locator("#wordle-message")).toHaveText("Not in the arcade dictionary.");
   await expect(page.locator(".wordle-tile.is-absent, .wordle-tile.is-present, .wordle-tile.is-correct")).toHaveCount(0);
   await expect
@@ -260,8 +261,62 @@ test("Wordle accepts guesses and colors submitted rows", async ({ page }) => {
     await page.getByRole("button", { name: letter, exact: true }).click();
   }
 
-  await page.getByRole("button", { name: "Enter" }).click();
   await expect(page.locator(".wordle-row").first().locator(".wordle-tile.is-absent, .wordle-tile.is-present, .wordle-tile.is-correct")).toHaveCount(5);
+});
+
+test("Wordle auto-submits and tracks win streaks", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(async () => {
+    const csvText = await fetch("assets/data/wordle-words.csv").then((response) => response.text());
+    const words = csvText
+      .split(/\r?\n/)
+      .map((line) => line.split(",")[0]?.trim().toUpperCase())
+      .filter((word) => /^[A-Z]{5}$/.test(word));
+    localStorage.setItem(
+      "minigames.wordle.usedAnswers",
+      JSON.stringify(words.filter((word) => word !== "ABACK"))
+    );
+  });
+  await launchGame(page, "Wordle");
+  await expect(page.locator("#wordle-message")).toHaveText("Guess the 5-letter word.");
+
+  for (const letter of "ABACK") {
+    await page.getByRole("button", { name: letter, exact: true }).click();
+  }
+
+  await expect(page.locator("#wordle-message")).toHaveText("Genius. First try!");
+  await expect(page.locator("#wordle-streak")).toHaveText("1");
+  await expect(page.locator("#wordle-best-streak")).toHaveText("1");
+  await expect(page.getByRole("button", { name: "New word" })).toBeVisible();
+});
+
+test("Wordle resets the current streak after a loss", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(async () => {
+    const csvText = await fetch("assets/data/wordle-words.csv").then((response) => response.text());
+    const words = csvText
+      .split(/\r?\n/)
+      .map((line) => line.split(",")[0]?.trim().toUpperCase())
+      .filter((word) => /^[A-Z]{5}$/.test(word));
+    localStorage.setItem(
+      "minigames.wordle.usedAnswers",
+      JSON.stringify(words.filter((word) => word !== "ABACK"))
+    );
+    localStorage.setItem("minigames.wordle.currentStreak", "3");
+    localStorage.setItem("minigames.wordle.bestStreak", "5");
+  });
+  await launchGame(page, "Wordle");
+  await expect(page.locator("#wordle-message")).toHaveText("Guess the 5-letter word.");
+
+  for (const guess of ["ABASE", "ABATE", "ABBEY", "ABBOT", "ABHOR", "ABIDE"]) {
+    for (const letter of guess) {
+      await page.getByRole("button", { name: letter, exact: true }).click();
+    }
+  }
+
+  await expect(page.locator("#wordle-message")).toHaveText("The word was ABACK.");
+  await expect(page.locator("#wordle-streak")).toHaveText("0");
+  await expect(page.locator("#wordle-best-streak")).toHaveText("5");
 });
 
 test("Snake starts, scores food, and ends on collision", async ({ page }) => {

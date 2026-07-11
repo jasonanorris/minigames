@@ -1,6 +1,8 @@
 const WORD_LENGTH = 5;
 const MAX_GUESSES = 6;
 const USED_ANSWERS_KEY = "minigames.wordle.usedAnswers";
+const CURRENT_STREAK_KEY = "minigames.wordle.currentStreak";
+const BEST_STREAK_KEY = "minigames.wordle.bestStreak";
 const WORD_LIST_URL = "assets/data/wordle-words.csv";
 let wordListPromise = null;
 let ANSWERS = [
@@ -341,6 +343,16 @@ export function startWordle({ stage }) {
 
   stage.innerHTML = `
     <div class="wordle-game" aria-live="polite">
+      <div class="wordle-stats" aria-label="Wordle stats">
+        <div class="score-tile wordle-stat">
+          <span class="score-label">Streak</span>
+          <strong id="wordle-streak">${readNumber(CURRENT_STREAK_KEY)}</strong>
+        </div>
+        <div class="score-tile wordle-stat">
+          <span class="score-label">Best</span>
+          <strong id="wordle-best-streak">${readNumber(BEST_STREAK_KEY)}</strong>
+        </div>
+      </div>
       <div class="wordle-board" id="wordle-board" aria-label="Wordle board"></div>
       <p class="game-message wordle-message" id="wordle-message">Loading word list...</p>
       <div class="wordle-keyboard" id="wordle-keyboard" aria-label="Wordle keyboard"></div>
@@ -352,6 +364,8 @@ export function startWordle({ stage }) {
   const keyboard = stage.querySelector("#wordle-keyboard");
   const message = stage.querySelector("#wordle-message");
   const restartButton = stage.querySelector("#wordle-restart");
+  const streakEl = stage.querySelector("#wordle-streak");
+  const bestStreakEl = stage.querySelector("#wordle-best-streak");
 
   function renderBoard() {
     board.innerHTML = "";
@@ -378,10 +392,6 @@ export function startWordle({ stage }) {
     KEY_ROWS.forEach((letters, rowIndex) => {
       const row = document.createElement("div");
       row.className = "wordle-key-row";
-
-      if (rowIndex === KEY_ROWS.length - 1) {
-        row.append(createKey("Enter", "ENTER", "wide"));
-      }
 
       for (const letter of letters) {
         row.append(createKey(letter, letter));
@@ -442,6 +452,7 @@ export function startWordle({ stage }) {
 
     if (currentGuess === answer) {
       isFinished = true;
+      recordWin();
       setMessage(currentRow === 0 ? "Genius. First try!" : `Solved in ${currentRow + 1}.`);
       restartButton.hidden = false;
       restartButton.focus();
@@ -453,6 +464,7 @@ export function startWordle({ stage }) {
 
     if (currentRow >= MAX_GUESSES) {
       isFinished = true;
+      recordLoss();
       setMessage(`The word was ${answer}.`);
       restartButton.hidden = false;
       restartButton.focus();
@@ -481,6 +493,10 @@ export function startWordle({ stage }) {
     if (/^[A-Z]$/.test(value) && currentGuess.length < WORD_LENGTH) {
       currentGuess += value;
       updateCurrentTiles();
+
+      if (currentGuess.length === WORD_LENGTH) {
+        submitGuess();
+      }
     }
   }
 
@@ -537,6 +553,24 @@ export function startWordle({ stage }) {
     if (getStatusRank(status) > getStatusRank(currentStatus)) {
       keyStatuses.set(letter, status);
     }
+  }
+
+  function recordWin() {
+    const nextStreak = readNumber(CURRENT_STREAK_KEY) + 1;
+    const nextBestStreak = Math.max(readNumber(BEST_STREAK_KEY), nextStreak);
+    writeNumber(CURRENT_STREAK_KEY, nextStreak);
+    writeNumber(BEST_STREAK_KEY, nextBestStreak);
+    renderStreaks(nextStreak, nextBestStreak);
+  }
+
+  function recordLoss() {
+    writeNumber(CURRENT_STREAK_KEY, 0);
+    renderStreaks(0, readNumber(BEST_STREAK_KEY));
+  }
+
+  function renderStreaks(currentStreak, bestStreak) {
+    streakEl.textContent = String(currentStreak);
+    bestStreakEl.textContent = String(bestStreak);
   }
 
   function getTile(rowIndex, columnIndex) {
@@ -667,6 +701,23 @@ function readUsedAnswers() {
 function writeUsedAnswers(usedAnswers) {
   try {
     window.localStorage.setItem(USED_ANSWERS_KEY, JSON.stringify([...usedAnswers]));
+  } catch {
+    // Some browser privacy modes disable local storage. The game still works.
+  }
+}
+
+function readNumber(key) {
+  try {
+    const value = Number.parseInt(window.localStorage.getItem(key) || "0", 10);
+    return Number.isFinite(value) && value >= 0 ? value : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function writeNumber(key, value) {
+  try {
+    window.localStorage.setItem(key, String(value));
   } catch {
     // Some browser privacy modes disable local storage. The game still works.
   }
