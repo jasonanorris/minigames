@@ -208,9 +208,18 @@ test("The Wheel manages prizes, locks settings while spinning, and announces a w
     "Try Again",
     "Try Again"
   ]);
+  await expect(page.getByRole("textbox")).toHaveCount(0);
   await page.getByRole("button", { name: "Add" }).click();
+  const newPrize = page.getByRole("textbox", { name: "New prize" });
+  const aButton = page.getByRole("button", { name: "A button" });
+  await expect(newPrize).toBeFocused();
+  await expect(aButton).toBeHidden();
+  await newPrize.fill("Arcade Token");
+  await newPrize.press("Enter");
+  await expect(page.getByRole("textbox")).toHaveCount(0);
+  await expect(aButton).toBeVisible();
   await expect(page.locator(".wheel-prize-text")).toHaveCount(6);
-  await expect(page.locator(".wheel-prize-text").last()).toHaveText("Prize 6");
+  await expect(page.locator(".wheel-prize-text").last()).toHaveText("Arcade Token");
   await page.getByRole("button", { name: "Remove prize 6" }).click();
   await expect(page.locator(".wheel-prize-text")).toHaveCount(5);
 

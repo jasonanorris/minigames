@@ -13,6 +13,7 @@ export function startTheWheel({ stage }) {
   let audioContext = null;
   let lastTickIndex = null;
   let confettiTimer = null;
+  let isAddingPrize = false;
   const spinDuration = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ? 0
     : 4200;
@@ -203,6 +204,10 @@ export function startTheWheel({ stage }) {
     }
   }
 
+  function updateAddButton() {
+    addButton.disabled = isSpinning || isAddingPrize || prizes.length >= 12;
+  }
+
   function renderPrizeInputs() {
     prizeList.innerHTML = "";
     prizes.forEach((prize, index) => {
@@ -217,7 +222,52 @@ export function startTheWheel({ stage }) {
       });
       prizeList.append(row);
     });
-    addButton.disabled = isSpinning || prizes.length >= 12;
+
+    if (isAddingPrize) {
+      renderNewPrizeInput();
+    }
+
+    updateAddButton();
+  }
+
+  function renderNewPrizeInput() {
+    const index = prizes.length;
+    const row = document.createElement("div");
+    let isCommitted = false;
+    row.className = "wheel-prize-row";
+    row.innerHTML = `<span style="--prize-color:${COLORS[index % COLORS.length]}">${index + 1}</span><input class="wheel-new-prize-input" type="text" maxlength="32" aria-label="New prize" placeholder="Prize ${index + 1}"><button type="button" aria-label="Cancel new prize">×</button>`;
+    const input = row.querySelector("input");
+    const cancelButton = row.querySelector("button");
+
+    function commitPrize() {
+      if (isCommitted) {
+        return;
+      }
+
+      isCommitted = true;
+      isAddingPrize = false;
+      prizes.push(input.value.trim() || `Prize ${index + 1}`);
+      renderPrizeInputs();
+      drawWheel();
+    }
+
+    cancelButton.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      isCommitted = true;
+      isAddingPrize = false;
+      renderPrizeInputs();
+    });
+    input.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") {
+        return;
+      }
+
+      event.preventDefault();
+      commitPrize();
+    });
+    input.addEventListener("blur", commitPrize);
+    prizeList.append(row);
+    input.focus();
   }
 
   function spin() {
@@ -256,11 +306,10 @@ export function startTheWheel({ stage }) {
   function closeModal() { modal.close(); wheel.focus(); }
   wheel.addEventListener("click", spin);
   addButton.addEventListener("click", () => {
-    if (prizes.length >= 12) return;
-    prizes.push(`Prize ${prizes.length + 1}`);
+    if (isSpinning || isAddingPrize || prizes.length >= 12) return;
+    isAddingPrize = true;
     renderPrizeInputs();
-    drawWheel();
-    prizeList.querySelector(".wheel-prize-row:last-child input")?.focus();
+    prizeList.scrollTop = prizeList.scrollHeight;
   });
   againButton.addEventListener("click", closeModal);
   modal.addEventListener("click", (event) => { if (event.target === modal) closeModal(); });
