@@ -327,6 +327,16 @@ function activateWaitingWorker(registration) {
   registration.waiting?.postMessage({ type: "SKIP_WAITING" });
 }
 
+function getScrollableTouchTarget(target) {
+  const scrollable = target?.closest?.(".wheel-prizes");
+
+  if (!scrollable) {
+    return null;
+  }
+
+  return scrollable.scrollHeight > scrollable.clientHeight ? scrollable : null;
+}
+
 function preventPullToRefreshWhilePlaying() {
   window.addEventListener(
     "touchstart",
@@ -346,6 +356,16 @@ function preventPullToRefreshWhilePlaying() {
       const touchY = event.touches[0]?.clientY || 0;
       const isPullingDown = touchY > touchStartY;
       const isAtTop = window.scrollY <= 0;
+      const scrollable = getScrollableTouchTarget(event.target);
+
+      if (scrollable) {
+        const canScrollDown = scrollable.scrollTop + scrollable.clientHeight < scrollable.scrollHeight - 1;
+        const canScrollUp = scrollable.scrollTop > 0;
+
+        if ((isPullingDown && canScrollUp) || (!isPullingDown && canScrollDown)) {
+          return;
+        }
+      }
 
       if (isPullingDown && isAtTop) {
         event.preventDefault();

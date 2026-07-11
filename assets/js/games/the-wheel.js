@@ -267,7 +267,8 @@ export function startTheWheel({ stage }) {
     });
     input.addEventListener("blur", commitPrize);
     prizeList.append(row);
-    input.focus();
+    input.focus({ preventScroll: true });
+    prizeList.scrollTop = prizeList.scrollHeight;
   }
 
   function spin() {
