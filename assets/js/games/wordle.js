@@ -1,7 +1,9 @@
 const WORD_LENGTH = 5;
 const MAX_GUESSES = 6;
 const USED_ANSWERS_KEY = "minigames.wordle.usedAnswers";
-const ANSWERS = [
+const WORD_LIST_URL = "assets/data/wordle-words.csv";
+let wordListPromise = null;
+let ANSWERS = [
   "ABOUT",
   "ABOVE",
   "ABUSE",
@@ -325,20 +327,22 @@ const EXTRA_GUESSES = [
   "XENON",
   "ZIPPY"
 ];
-const VALID_GUESSES = new Set([...ANSWERS, ...EXTRA_GUESSES].filter((word) => word.length === WORD_LENGTH));
+let VALID_GUESSES = new Set([...ANSWERS, ...EXTRA_GUESSES].filter((word) => word.length === WORD_LENGTH));
 const KEY_ROWS = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
 
 export function startWordle({ stage }) {
-  let answer = chooseAnswer();
+  let answer = "";
   let currentGuess = "";
   let currentRow = 0;
   let isFinished = false;
+  let isMounted = true;
+  let isReady = false;
   const keyStatuses = new Map();
 
   stage.innerHTML = `
     <div class="wordle-game" aria-live="polite">
       <div class="wordle-board" id="wordle-board" aria-label="Wordle board"></div>
-      <p class="game-message wordle-message" id="wordle-message">Guess the 5-letter word.</p>
+      <p class="game-message wordle-message" id="wordle-message">Loading word list...</p>
       <div class="wordle-keyboard" id="wordle-keyboard" aria-label="Wordle keyboard"></div>
       <button class="secondary-action wordle-restart" id="wordle-restart" type="button" hidden>New word</button>
     </div>
@@ -409,6 +413,11 @@ export function startWordle({ stage }) {
   }
 
   function submitGuess() {
+    if (!isReady) {
+      setMessage("Loading word list...");
+      return;
+    }
+
     if (currentGuess.length < WORD_LENGTH) {
       setMessage("Need 5 letters.");
       shakeRow();
@@ -454,7 +463,7 @@ export function startWordle({ stage }) {
   }
 
   function handleInput(value) {
-    if (isFinished) {
+    if (isFinished || !isReady) {
       return;
     }
 
@@ -549,14 +558,80 @@ export function startWordle({ stage }) {
   keyboard.addEventListener("click", handleKeyboardClick);
   restartButton.addEventListener("click", restart);
   window.addEventListener("keydown", handlePhysicalKeyboard);
+  initializeWordle();
 
   return {
     cleanup() {
+      isMounted = false;
       keyboard.removeEventListener("click", handleKeyboardClick);
       restartButton.removeEventListener("click", restart);
       window.removeEventListener("keydown", handlePhysicalKeyboard);
     }
   };
+
+  async function initializeWordle() {
+    await loadWordList();
+
+    if (!isMounted) {
+      return;
+    }
+
+    answer = chooseAnswer();
+    isReady = true;
+    setMessage("Guess the 5-letter word.");
+  }
+}
+
+async function loadWordList() {
+  wordListPromise ||= fetch(WORD_LIST_URL)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Could not load Wordle word list: ${response.status}`);
+      }
+
+      return response.text();
+    })
+    .then((csvText) => {
+      const csvWords = parseWordListCsv(csvText);
+
+      if (csvWords.length === 0) {
+        return;
+      }
+
+      ANSWERS = csvWords;
+      VALID_GUESSES = new Set(csvWords);
+    })
+    .catch(() => {
+      // The bundled list above keeps the game playable if the CSV cannot load.
+    });
+
+  return wordListPromise;
+}
+
+function parseWordListCsv(csvText) {
+  const words = [];
+  const seenWords = new Set();
+
+  csvText.split(/\r?\n/).forEach((line, index) => {
+    const [firstCell] = line.split(",");
+    const word = firstCell?.trim().replace(/^"|"$/g, "").toUpperCase();
+
+    if (
+      index === 0 &&
+      (word === "WORD" || word === "WORDS" || word === "ANSWER" || word === "ANSWERS")
+    ) {
+      return;
+    }
+
+    if (!/^[A-Z]{5}$/.test(word) || seenWords.has(word)) {
+      return;
+    }
+
+    seenWords.add(word);
+    words.push(word);
+  });
+
+  return words;
 }
 
 function chooseAnswer() {

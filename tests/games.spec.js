@@ -237,6 +237,7 @@ test("Wordle accepts guesses and colors submitted rows", async ({ page }) => {
   await expect(page.locator("#small-game-back")).toBeVisible();
   await expect(page.locator(".wordle-tile")).toHaveCount(30);
   await expect(page.locator(".wordle-key")).toHaveCount(28);
+  await expect(page.locator("#wordle-message")).toHaveText("Guess the 5-letter word.");
 
   for (const letter of "ZZZZZ") {
     await page.getByRole("button", { name: letter, exact: true }).click();
