@@ -5,9 +5,9 @@ import { startQuickMath } from "./quick-math.js";
 import { startTheWheel } from "./the-wheel.js";
 import { startSnake } from "./snake.js";
 import { startWordle } from "./wordle.js";
+import { startTicTacToe } from "./tic-tac-toe.js";
 
 const placeholderGames = [
-  { id: "tic-tac-toe", title: "Tic Tac Toe", mark: "XO" },
   { id: "simon", title: "Simon", mark: "1234" },
   { id: "word-mix", title: "Word Mix", mark: "ABC" },
   { id: "mines", title: "Mines", mark: "!" },
@@ -117,6 +117,20 @@ export const games = [
       tintSecondary: "rgba(247, 201, 72, 0.12)"
     },
     start: startWordle
+  },
+  {
+    id: "tic-tac-toe",
+    title: "Tic Tac Toe",
+    mark: "XO",
+    displayMode: "small",
+    description: "Take turns placing Xs and Os until someone claims three in a row.",
+    status: "Playable",
+    theme: {
+      color: "#20172a",
+      tint: "rgba(155, 93, 229, 0.2)",
+      tintSecondary: "rgba(6, 214, 160, 0.12)"
+    },
+    start: startTicTacToe
   },
   ...placeholderGames
 ];

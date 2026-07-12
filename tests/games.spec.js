@@ -335,6 +335,43 @@ test("Wordle resets the current streak after a loss", async ({ page }) => {
   await expect(page.locator("#wordle-best-streak")).toHaveText("5");
 });
 
+test("Tic Tac Toe plays in small mode, scores a win, and restarts", async ({ page }) => {
+  await page.goto("/");
+  await launchGame(page, "Tic Tac Toe");
+
+  await expect(page.locator("body")).toHaveClass(/is-small-game/);
+  await expect(page.locator("#small-game-back")).toBeVisible();
+  await expect(page.locator(".tic-cell")).toHaveCount(9);
+  await expect(page.locator("#tic-message")).toHaveText("X goes first.");
+  await expect(page.locator("#tic-score-x")).toHaveText("0");
+  await expect(page.locator(".tic-cell").first()).toBeFocused();
+
+  const ticFitsDisplay = await page.evaluate(() => {
+    const stageContent = document.querySelector(".stage-content").getBoundingClientRect();
+    const game = document.querySelector(".tic-tac-toe").getBoundingClientRect();
+    return game.top >= stageContent.top && game.bottom <= stageContent.bottom;
+  });
+  expect(ticFitsDisplay).toBe(true);
+
+  for (const index of [0, 3, 1, 4, 2]) {
+    await page.locator(`.tic-cell[data-index="${index}"]`).click();
+  }
+
+  await expect(page.locator("#tic-message")).toHaveText("X wins!");
+  await expect(page.locator("#tic-score-x")).toHaveText("1");
+  await expect(page.locator(".tic-cell.is-winning")).toHaveCount(3);
+  await expect
+    .poll(() =>
+      page.evaluate(() => JSON.parse(localStorage.getItem("minigames.ticTacToe.score") || "{}").X)
+    )
+    .toBe(1);
+
+  await page.getByRole("button", { name: "New round" }).click();
+  await expect(page.locator("#tic-message")).toHaveText("X goes first.");
+  await expect(page.locator(".tic-cell:not(:empty)")).toHaveCount(0);
+  await expect(page.locator("#tic-score-x")).toHaveText("1");
+});
+
 test("Snake starts, scores food, and ends on collision", async ({ page }) => {
   await page.clock.install();
   await page.goto("/");
