@@ -6,11 +6,11 @@ import { startTheWheel } from "./the-wheel.js";
 import { startSnake } from "./snake.js";
 import { startWordle } from "./wordle.js";
 import { startTicTacToe } from "./tic-tac-toe.js";
+import { startMines } from "./mines.js";
 
 const placeholderGames = [
   { id: "simon", title: "Simon", mark: "1234" },
   { id: "word-mix", title: "Word Mix", mark: "ABC" },
-  { id: "mines", title: "Mines", mark: "!" },
   { id: "number-merge", title: "2048", mark: "2048" },
   { id: "color-match", title: "Color Match", mark: "RGB" },
   { id: "maze", title: "Maze", mark: "->" },
@@ -131,6 +131,20 @@ export const games = [
       tintSecondary: "rgba(6, 214, 160, 0.12)"
     },
     start: startTicTacToe
+  },
+  {
+    id: "mines",
+    title: "Mines",
+    mark: "💣",
+    displayMode: "medium",
+    description: "Reveal safe tiles, flag mines, and clear the field.",
+    status: "Playable",
+    theme: {
+      color: "#17241f",
+      tint: "rgba(6, 214, 160, 0.18)",
+      tintSecondary: "rgba(255, 209, 102, 0.12)"
+    },
+    start: startMines
   },
   ...placeholderGames
 ];

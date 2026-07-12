@@ -379,6 +379,43 @@ test("Tic Tac Toe plays in small mode, scores a win, and restarts", async ({ pag
   await expect(page.locator("#tic-score-x")).toHaveText("1");
 });
 
+test("Mines plays in medium mode, reveals safely, flags, and restarts", async ({ page }) => {
+  await page.goto("/");
+  await launchGame(page, "Mines");
+
+  await expect(page.locator("body")).toHaveClass(/is-medium-game/);
+  await expect(page.locator("body")).not.toHaveClass(/is-small-game/);
+  await expect(page.locator("#small-game-back")).toBeVisible();
+  await expect(page.locator(".launcher-controls")).toBeHidden();
+  await expect(page.locator(".mines-cell")).toHaveCount(64);
+  await expect(page.locator("#mines-left")).toHaveText("10");
+  await expect(page.locator("#mines-safe")).toHaveText("0 / 54");
+
+  const minesFitsDisplay = await page.evaluate(() => {
+    const stageContent = document.querySelector(".stage-content").getBoundingClientRect();
+    const game = document.querySelector(".mines-game").getBoundingClientRect();
+    return game.top >= stageContent.top && game.bottom <= stageContent.bottom;
+  });
+  expect(minesFitsDisplay).toBe(true);
+
+  await page.locator(".mines-cell").first().click();
+  await expect(page.locator(".mines-cell.is-revealed").first()).toBeVisible();
+  await expect(page.locator(".mines-cell.is-mine")).toHaveCount(0);
+  await expect(page.locator("#mines-safe")).not.toHaveText("0 / 54");
+
+  await page.locator("#mines-flag-toggle").click();
+  await expect(page.locator("#mines-flag-toggle")).toHaveAttribute("aria-pressed", "true");
+  await page.locator(".mines-cell:not(:disabled)").first().click();
+  await expect(page.locator(".mines-cell.is-flagged")).toHaveCount(1);
+  await expect(page.locator("#mines-left")).toHaveText("9");
+
+  await page.locator("#mines-new-game").click();
+  await expect(page.locator("#mines-left")).toHaveText("10");
+  await expect(page.locator("#mines-safe")).toHaveText("0 / 54");
+  await expect(page.locator(".mines-cell.is-revealed")).toHaveCount(0);
+  await expect(page.locator(".mines-cell.is-flagged")).toHaveCount(0);
+});
+
 test("Snake starts, scores food, and ends on collision", async ({ page }) => {
   await page.clock.install();
   await page.goto("/");
