@@ -1033,6 +1033,63 @@ body.is-medium-game .stage-content {
   padding: 7px 12px;
 }
 
+.tic-win-modal {
+  border-color: #4cc9f0;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(76, 201, 240, .2), transparent 42%),
+    #161a2d;
+}
+
+.tic-win-modal > :not(.tic-fireworks) {
+  position: relative;
+  z-index: 1;
+}
+
+.tic-win-burst {
+  color: #4cc9f0;
+  text-shadow:
+    0 0 14px rgba(76, 201, 240, .74),
+    0 0 28px rgba(255, 209, 102, .38);
+}
+
+.tic-winner {
+  color: #ffd166;
+  text-shadow: 0 3px 0 rgba(0, 0, 0, .32);
+}
+
+.tic-fireworks {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tic-fireworks span {
+  position: absolute;
+  top: var(--firework-y);
+  left: var(--firework-x);
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--firework-color);
+  box-shadow: 0 0 12px var(--firework-color);
+  opacity: 0;
+  animation: tic-firework-burst 920ms var(--firework-delay) ease-out forwards;
+  transform: translate(-50%, -50%) rotate(var(--firework-angle)) translateX(0) scale(.2);
+}
+
+.tic-fireworks span:nth-child(4n) {
+  width: 10px;
+  height: 3px;
+  border-radius: 3px;
+}
+
+.tic-fireworks span:nth-child(5n) {
+  width: 5px;
+  height: 5px;
+}
+
 .wordle-game {
   display: grid;
   width: min(31rem, 100%);
@@ -1606,6 +1663,22 @@ body.is-medium-game .stage-content {
   100% {
     opacity: .92;
     transform: translate3d(calc(var(--confetti-x) + var(--confetti-drift)), 108vh, 0) rotate(var(--confetti-spin));
+  }
+}
+
+@keyframes tic-firework-burst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--firework-angle)) translateX(0) scale(.2);
+  }
+
+  16% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--firework-angle)) translateX(var(--firework-distance)) scale(1);
   }
 }
 

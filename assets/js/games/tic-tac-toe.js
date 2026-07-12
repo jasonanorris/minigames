@@ -9,6 +9,9 @@ const WIN_LINES = [
   [0, 4, 8],
   [2, 4, 6]
 ];
+const FIREWORK_COLORS = ["#ff4d8d", "#ffd166", "#06d6a0", "#4cc9f0", "#9b5de5", "#f78c6b"];
+const FIREWORK_COUNT = 84;
+const HORN_VOLUME = 0.32;
 
 export function startTicTacToe({ stage }) {
   let board = Array(9).fill("");
@@ -17,6 +20,8 @@ export function startTicTacToe({ stage }) {
   let winningLine = [];
   let score = readScore();
   let focusFrame = null;
+  let fireworksTimer = null;
+  let audioContext = null;
 
   stage.innerHTML = `
     <div class="tic-tac-toe" aria-live="polite">
@@ -40,6 +45,15 @@ export function startTicTacToe({ stage }) {
       <div class="tic-board" id="tic-board" role="grid" aria-label="Tic Tac Toe board"></div>
 
       <button class="secondary-action tic-restart" id="tic-restart" type="button">New round</button>
+
+      <dialog class="win-modal tic-win-modal" id="tic-win-modal" aria-labelledby="tic-win-title">
+        <div class="tic-fireworks" id="tic-fireworks" aria-hidden="true"></div>
+        <div class="win-burst tic-win-burst" aria-hidden="true">✹</div>
+        <p class="win-kicker">Winner!</p>
+        <h3 id="tic-win-title">X wins!</h3>
+        <strong class="win-prize tic-winner" id="tic-winner">Player X</strong>
+        <button class="primary-action" id="tic-modal-new-round" type="button">New round</button>
+      </dialog>
     </div>
   `;
 
@@ -49,6 +63,11 @@ export function startTicTacToe({ stage }) {
   const xScoreEl = stage.querySelector("#tic-score-x");
   const oScoreEl = stage.querySelector("#tic-score-o");
   const tieScoreEl = stage.querySelector("#tic-score-ties");
+  const winModal = stage.querySelector("#tic-win-modal");
+  const winTitle = stage.querySelector("#tic-win-title");
+  const winnerName = stage.querySelector("#tic-winner");
+  const modalNewRoundButton = stage.querySelector("#tic-modal-new-round");
+  const fireworks = stage.querySelector("#tic-fireworks");
 
   function renderBoard() {
     boardEl.innerHTML = "";
@@ -99,7 +118,7 @@ export function startTicTacToe({ stage }) {
       renderScore();
       messageEl.textContent = `${result.winner} wins!`;
       renderBoard();
-      restartButton.focus();
+      showWinModal(result.winner);
       return;
     }
 
@@ -121,6 +140,7 @@ export function startTicTacToe({ stage }) {
   }
 
   function restart() {
+    closeWinModal();
     board = Array(9).fill("");
     currentPlayer = "X";
     isFinished = false;
@@ -128,6 +148,89 @@ export function startTicTacToe({ stage }) {
     messageEl.textContent = "X goes first.";
     renderBoard();
     focusFirstOpenCell();
+  }
+
+  function showWinModal(winner) {
+    winTitle.textContent = `${winner} wins!`;
+    winnerName.textContent = `Player ${winner}`;
+    playWinHorn();
+    launchFireworks();
+
+    if (typeof winModal.showModal === "function" && !winModal.open) {
+      winModal.showModal();
+      modalNewRoundButton.focus();
+      return;
+    }
+
+    restartButton.focus();
+  }
+
+  function closeWinModal() {
+    clearFireworks();
+
+    if (winModal.open) {
+      winModal.close();
+    }
+  }
+
+  function playWinHorn() {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContext) return;
+
+    audioContext ||= new AudioContext();
+    audioContext.resume().catch(() => { });
+    const start = audioContext.currentTime;
+    const notes = [
+      { frequency: 392, type: "sawtooth", hold: 0.08 },
+      { frequency: 523.25, type: "triangle", hold: 0.07 },
+      { frequency: 659.25, type: "square", hold: 0.08 },
+      { frequency: 987.77, type: "triangle", hold: 0.12 },
+      { frequency: 783.99, type: "square", hold: 0.24 }
+    ];
+
+    notes.forEach((note, index) => {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const noteStart = start + index * 0.105;
+      oscillator.type = note.type;
+      oscillator.frequency.setValueAtTime(note.frequency, noteStart);
+      gain.gain.setValueAtTime(0.0001, noteStart);
+      gain.gain.exponentialRampToValueAtTime(HORN_VOLUME, noteStart + 0.015);
+      gain.gain.setValueAtTime(HORN_VOLUME, noteStart + note.hold);
+      gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + note.hold + 0.16);
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start(noteStart);
+      oscillator.stop(noteStart + note.hold + 0.18);
+    });
+  }
+
+  function launchFireworks() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    clearFireworks();
+
+    for (let index = 0; index < FIREWORK_COUNT; index += 1) {
+      const spark = document.createElement("span");
+      const burstIndex = index % 7;
+      const angle = ((index % 12) * 30) + (Math.random() * 18 - 9);
+      const x = 14 + ((burstIndex * 13) % 72) + Math.random() * 8;
+      const y = 14 + ((burstIndex * 9) % 36) + Math.random() * 8;
+      spark.style.setProperty("--firework-x", `${x}vw`);
+      spark.style.setProperty("--firework-y", `${y}vh`);
+      spark.style.setProperty("--firework-angle", `${angle}deg`);
+      spark.style.setProperty("--firework-distance", `${44 + Math.random() * 82}px`);
+      spark.style.setProperty("--firework-delay", `${burstIndex * 0.12 + Math.random() * 0.08}s`);
+      spark.style.setProperty("--firework-color", FIREWORK_COLORS[index % FIREWORK_COLORS.length]);
+      fireworks.append(spark);
+    }
+
+    fireworksTimer = window.setTimeout(clearFireworks, 2200);
+  }
+
+  function clearFireworks() {
+    window.clearTimeout(fireworksTimer);
+    fireworks.replaceChildren();
   }
 
   function getGameResult() {
@@ -161,14 +264,18 @@ export function startTicTacToe({ stage }) {
 
   boardEl.addEventListener("click", handleCellClick);
   restartButton.addEventListener("click", restart);
+  modalNewRoundButton.addEventListener("click", restart);
   renderBoard();
   focusFrame = window.requestAnimationFrame(focusFirstOpenCell);
 
   return {
     cleanup() {
       window.cancelAnimationFrame(focusFrame);
+      closeWinModal();
       boardEl.removeEventListener("click", handleCellClick);
       restartButton.removeEventListener("click", restart);
+      modalNewRoundButton.removeEventListener("click", restart);
+      audioContext?.close?.().catch(() => { });
     }
   };
 }
