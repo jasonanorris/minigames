@@ -302,6 +302,7 @@ test("Wordle auto-submits and tracks win streaks", async ({ page }) => {
   await expect(page.locator("#wordle-message")).toHaveText("Genius. First try!");
   await expect(page.locator("#wordle-streak")).toHaveText("1");
   await expect(page.locator("#wordle-best-streak")).toHaveText("1");
+  await expect(page.locator("#wordle-confetti span")).toHaveCount(72);
   await expect(page.getByRole("button", { name: "New word" })).toBeVisible();
 });
 

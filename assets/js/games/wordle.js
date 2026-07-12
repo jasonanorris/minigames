@@ -4,6 +4,8 @@ const USED_ANSWERS_KEY = "minigames.wordle.usedAnswers";
 const CURRENT_STREAK_KEY = "minigames.wordle.currentStreak";
 const BEST_STREAK_KEY = "minigames.wordle.bestStreak";
 const WORD_LIST_URL = "assets/data/wordle-words.csv";
+const CELEBRATION_COLORS = ["#ef476f", "#ffd166", "#06d6a0", "#118ab2", "#9b5de5", "#f78c6b", "#4cc9f0", "#90be6d"];
+const HORN_VOLUME = 0.28;
 let wordListPromise = null;
 let ANSWERS = [
   "ABOUT",
@@ -339,10 +341,13 @@ export function startWordle({ stage }) {
   let isFinished = false;
   let isMounted = true;
   let isReady = false;
+  let audioContext = null;
+  let confettiTimer = null;
   const keyStatuses = new Map();
 
   stage.innerHTML = `
     <div class="wordle-game" aria-live="polite">
+      <div class="win-confetti wordle-confetti" id="wordle-confetti" aria-hidden="true"></div>
       <div class="wordle-stats" aria-label="Wordle stats">
         <div class="score-tile wordle-stat">
           <span class="score-label">Streak</span>
@@ -366,6 +371,7 @@ export function startWordle({ stage }) {
   const restartButton = stage.querySelector("#wordle-restart");
   const streakEl = stage.querySelector("#wordle-streak");
   const bestStreakEl = stage.querySelector("#wordle-best-streak");
+  const confetti = stage.querySelector("#wordle-confetti");
 
   function renderBoard() {
     board.innerHTML = "";
@@ -466,6 +472,7 @@ export function startWordle({ stage }) {
     if (currentGuess === answer) {
       isFinished = true;
       recordWin();
+      celebrateWin();
       setMessage(currentRow === 0 ? "Genius. First try!" : `Solved in ${currentRow + 1}.`);
       restartButton.hidden = false;
       restartButton.focus();
@@ -537,6 +544,7 @@ export function startWordle({ stage }) {
   }
 
   function restart() {
+    clearConfetti();
     answer = chooseAnswer();
     currentGuess = "";
     currentRow = 0;
@@ -547,6 +555,68 @@ export function startWordle({ stage }) {
     renderBoard();
     updateKeyboard();
     stage.focus();
+  }
+
+  function celebrateWin() {
+    playWinHorn();
+    launchConfetti();
+  }
+
+  function playWinHorn() {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContext) return;
+
+    audioContext ||= new AudioContext();
+    audioContext.resume().catch(() => { });
+    const start = audioContext.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.5];
+
+    notes.forEach((frequency, index) => {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const noteStart = start + index * 0.12;
+      oscillator.type = index === notes.length - 1 ? "square" : "triangle";
+      oscillator.frequency.setValueAtTime(frequency, noteStart);
+      gain.gain.setValueAtTime(0.0001, noteStart);
+      gain.gain.exponentialRampToValueAtTime(HORN_VOLUME, noteStart + 0.018);
+      gain.gain.setValueAtTime(
+        HORN_VOLUME,
+        noteStart + (index === notes.length - 1 ? 0.11 : 0.05)
+      );
+      gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        noteStart + (index === notes.length - 1 ? 0.42 : 0.16)
+      );
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start(noteStart);
+      oscillator.stop(noteStart + (index === notes.length - 1 ? 0.44 : 0.18));
+    });
+  }
+
+  function launchConfetti() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    window.clearTimeout(confettiTimer);
+    confetti.replaceChildren();
+
+    for (let index = 0; index < 72; index += 1) {
+      const piece = document.createElement("span");
+      piece.style.setProperty("--confetti-x", `${Math.random() * 100}vw`);
+      piece.style.setProperty("--confetti-drift", `${Math.random() * 180 - 90}px`);
+      piece.style.setProperty("--confetti-delay", `${Math.random() * 0.45}s`);
+      piece.style.setProperty("--confetti-duration", `${1.8 + Math.random() * 1.5}s`);
+      piece.style.setProperty("--confetti-spin", `${360 + Math.random() * 900}deg`);
+      piece.style.setProperty("--confetti-color", CELEBRATION_COLORS[index % CELEBRATION_COLORS.length]);
+      confetti.append(piece);
+    }
+
+    confettiTimer = window.setTimeout(clearConfetti, 3800);
+  }
+
+  function clearConfetti() {
+    window.clearTimeout(confettiTimer);
+    confetti.replaceChildren();
   }
 
   function clearActiveTiles() {
@@ -616,6 +686,8 @@ export function startWordle({ stage }) {
   return {
     cleanup() {
       isMounted = false;
+      clearConfetti();
+      audioContext?.close().catch(() => { });
       keyboard.removeEventListener("click", handleKeyboardClick);
       restartButton.removeEventListener("click", restart);
       window.removeEventListener("keydown", handlePhysicalKeyboard);

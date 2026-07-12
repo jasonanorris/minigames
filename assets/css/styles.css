@@ -1454,6 +1454,10 @@ body.is-medium-game .stage-content {
   height: 6px;
 }
 
+.wordle-confetti {
+  z-index: 20;
+}
+
 .win-burst {
   color: #ffd166;
   font-size: 3.6rem;
