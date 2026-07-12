@@ -1042,7 +1042,7 @@ body.is-medium-game .stage-content {
 
 .tic-win-modal > :not(.tic-fireworks) {
   position: relative;
-  z-index: 1;
+  z-index: 3;
 }
 
 .tic-win-burst {
@@ -1059,7 +1059,7 @@ body.is-medium-game .stage-content {
 
 .tic-fireworks {
   position: fixed;
-  z-index: 0;
+  z-index: 2;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
