@@ -12,7 +12,7 @@ const NEIGHBOR_OFFSETS = [
   [1, 1]
 ];
 const CELEBRATION_COLORS = ["#ef476f", "#ffd166", "#06d6a0", "#4cc9f0", "#9b5de5", "#f78c6b"];
-const BOMB_VOLUME = 0.24;
+const BOMB_VOLUME = 0.44;
 const HORN_VOLUME = 0.28;
 const LONG_PRESS_MS = 520;
 
@@ -343,32 +343,52 @@ export function startMines({ stage }) {
     audioContext ||= new AudioContext();
     audioContext.resume().catch(() => { });
     const now = audioContext.currentTime;
-    const noiseLength = Math.floor(audioContext.sampleRate * 0.32);
+    const noiseLength = Math.floor(audioContext.sampleRate * 0.46);
     const noiseBuffer = audioContext.createBuffer(1, noiseLength, audioContext.sampleRate);
     const noiseData = noiseBuffer.getChannelData(0);
 
     for (let index = 0; index < noiseLength; index += 1) {
-      noiseData[index] = (Math.random() * 2 - 1) * (1 - index / noiseLength);
+      const progress = index / noiseLength;
+      noiseData[index] = (Math.random() * 2 - 1) * (1 - progress) ** 1.8;
     }
 
     const noise = audioContext.createBufferSource();
     const noiseGain = audioContext.createGain();
+    const noiseFilter = audioContext.createBiquadFilter();
+    const crack = audioContext.createOscillator();
+    const crackGain = audioContext.createGain();
     const boom = audioContext.createOscillator();
     const boomGain = audioContext.createGain();
     noise.buffer = noiseBuffer;
-    noiseGain.gain.setValueAtTime(BOMB_VOLUME * 0.9, now);
-    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
-    boom.type = "sawtooth";
-    boom.frequency.setValueAtTime(115, now);
-    boom.frequency.exponentialRampToValueAtTime(42, now + 0.34);
-    boomGain.gain.setValueAtTime(BOMB_VOLUME, now);
-    boomGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.38);
-    noise.connect(noiseGain).connect(audioContext.destination);
+    noiseFilter.type = "bandpass";
+    noiseFilter.frequency.setValueAtTime(820, now);
+    noiseFilter.Q.setValueAtTime(0.9, now);
+    noiseGain.gain.setValueAtTime(BOMB_VOLUME * 1.05, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.44);
+
+    crack.type = "square";
+    crack.frequency.setValueAtTime(360, now);
+    crack.frequency.exponentialRampToValueAtTime(95, now + 0.16);
+    crackGain.gain.setValueAtTime(0.0001, now);
+    crackGain.gain.exponentialRampToValueAtTime(BOMB_VOLUME * 0.86, now + 0.012);
+    crackGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+
+    boom.type = "triangle";
+    boom.frequency.setValueAtTime(220, now + 0.02);
+    boom.frequency.exponentialRampToValueAtTime(70, now + 0.42);
+    boomGain.gain.setValueAtTime(0.0001, now);
+    boomGain.gain.exponentialRampToValueAtTime(BOMB_VOLUME * 0.72, now + 0.03);
+    boomGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.48);
+
+    noise.connect(noiseFilter).connect(noiseGain).connect(audioContext.destination);
+    crack.connect(crackGain).connect(audioContext.destination);
     boom.connect(boomGain).connect(audioContext.destination);
     noise.start(now);
-    noise.stop(now + 0.36);
-    boom.start(now);
-    boom.stop(now + 0.4);
+    noise.stop(now + 0.48);
+    crack.start(now);
+    crack.stop(now + 0.2);
+    boom.start(now + 0.02);
+    boom.stop(now + 0.5);
   }
 
   function playWinHorn() {
