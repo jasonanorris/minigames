@@ -1188,6 +1188,14 @@ body.is-medium-game .stage-content {
     0 0 0 2px rgba(61, 214, 208, .18);
 }
 
+.mines-cell.is-long-press:not(:disabled) {
+  border-color: #ffd166;
+  transform: scale(.96);
+  box-shadow:
+    inset 0 -4px 0 rgba(0, 0, 0, .2),
+    0 0 0 3px rgba(255, 209, 102, .2);
+}
+
 .mines-cell.is-revealed {
   border-color: #263945;
   background: #101a21;
@@ -1240,6 +1248,10 @@ body.is-medium-game .stage-content {
   border-color: #ffd166;
   color: #ffd166;
   box-shadow: 0 0 0 3px rgba(255, 209, 102, .16);
+}
+
+.mines-confetti {
+  z-index: 20;
 }
 
 .wordle-game {

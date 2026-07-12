@@ -403,11 +403,21 @@ test("Mines plays in medium mode, reveals safely, flags, and restarts", async ({
   await expect(page.locator(".mines-cell.is-mine")).toHaveCount(0);
   await expect(page.locator("#mines-safe")).not.toHaveText("0 / 54");
 
-  await page.locator("#mines-flag-toggle").click();
-  await expect(page.locator("#mines-flag-toggle")).toHaveAttribute("aria-pressed", "true");
-  await page.locator(".mines-cell:not(:disabled)").first().click();
+  const longPressCell = page.locator(".mines-cell:not(:disabled)").first();
+  const longPressBox = await longPressCell.boundingBox();
+  expect(longPressBox).not.toBeNull();
+  await page.mouse.move(longPressBox.x + longPressBox.width / 2, longPressBox.y + longPressBox.height / 2);
+  await page.mouse.down();
+  await page.waitForTimeout(650);
+  await page.mouse.up();
   await expect(page.locator(".mines-cell.is-flagged")).toHaveCount(1);
   await expect(page.locator("#mines-left")).toHaveText("9");
+
+  await page.locator("#mines-flag-toggle").click();
+  await expect(page.locator("#mines-flag-toggle")).toHaveAttribute("aria-pressed", "true");
+  await page.locator(".mines-cell:not(:disabled):not(.is-flagged)").first().click();
+  await expect(page.locator(".mines-cell.is-flagged")).toHaveCount(2);
+  await expect(page.locator("#mines-left")).toHaveText("8");
 
   await page.locator("#mines-new-game").click();
   await expect(page.locator("#mines-left")).toHaveText("10");

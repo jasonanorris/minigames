@@ -11,12 +11,22 @@ const NEIGHBOR_OFFSETS = [
   [1, 0],
   [1, 1]
 ];
+const CELEBRATION_COLORS = ["#ef476f", "#ffd166", "#06d6a0", "#4cc9f0", "#9b5de5", "#f78c6b"];
+const BOMB_VOLUME = 0.24;
+const HORN_VOLUME = 0.28;
+const LONG_PRESS_MS = 520;
 
 export function startMines({ stage }) {
   let cells = [];
   let isFirstReveal = true;
   let isFinished = false;
   let isFlagMode = false;
+  let audioContext = null;
+  let confettiTimer = null;
+  let longPressTimer = null;
+  let longPressIndex = null;
+  let suppressClickIndex = null;
+  let suppressClickTimer = null;
 
   stage.innerHTML = `
     <div class="mines-game">
@@ -34,6 +44,7 @@ export function startMines({ stage }) {
       <p class="game-message mines-message" id="mines-message">Find every safe tile. First tap is safe.</p>
 
       <div class="mines-board" id="mines-board" role="grid" aria-label="Mines board"></div>
+      <div class="win-confetti mines-confetti" id="mines-confetti" aria-hidden="true"></div>
 
       <div class="mines-actions">
         <button class="secondary-action mines-flag-toggle" id="mines-flag-toggle" type="button" aria-pressed="false">🚩 Flag</button>
@@ -48,8 +59,12 @@ export function startMines({ stage }) {
   const safeEl = stage.querySelector("#mines-safe");
   const flagToggle = stage.querySelector("#mines-flag-toggle");
   const newGameButton = stage.querySelector("#mines-new-game");
+  const confetti = stage.querySelector("#mines-confetti");
 
   function newGame() {
+    clearConfetti();
+    clearLongPress();
+    clearSuppressedClick();
     cells = createEmptyCells();
     isFirstReveal = true;
     isFinished = false;
@@ -69,6 +84,12 @@ export function startMines({ stage }) {
     const index = Number.parseInt(button.dataset.index || "-1", 10);
 
     if (!Number.isInteger(index) || !cells[index] || cells[index].isRevealed) return;
+
+    if (suppressClickIndex === index) {
+      clearSuppressedClick();
+      event.preventDefault();
+      return;
+    }
 
     if (isFlagMode) {
       toggleFlag(index);
@@ -166,6 +187,7 @@ export function startMines({ stage }) {
 
   function finishWin() {
     isFinished = true;
+    clearLongPress();
 
     for (const cell of cells) {
       if (cell.isMine) {
@@ -175,11 +197,14 @@ export function startMines({ stage }) {
 
     messageEl.textContent = "You cleared the field!";
     render();
+    playWinHorn();
+    launchConfetti();
     newGameButton.focus();
   }
 
   function finishLoss() {
     isFinished = true;
+    clearLongPress();
 
     for (const cell of cells) {
       if (cell.isMine) {
@@ -189,6 +214,7 @@ export function startMines({ stage }) {
 
     messageEl.textContent = "Boom! Try another field.";
     render();
+    playBombSound();
     newGameButton.focus();
   }
 
@@ -257,16 +283,168 @@ export function startMines({ stage }) {
     messageEl.textContent = isFlagMode ? "Flag mode on. Tap tiles to flag them." : "Reveal mode on.";
   }
 
+  function handlePointerDown(event) {
+    const button = event.target.closest(".mines-cell");
+
+    if (!button || isFinished) return;
+
+    const index = Number.parseInt(button.dataset.index || "-1", 10);
+
+    if (!Number.isInteger(index) || !cells[index] || cells[index].isRevealed) return;
+
+    clearLongPress();
+    longPressIndex = index;
+    button.classList.add("is-long-press");
+    longPressTimer = window.setTimeout(() => {
+      const activeIndex = longPressIndex;
+      clearLongPress();
+
+      if (Number.isInteger(activeIndex) && cells[activeIndex] && !cells[activeIndex].isRevealed && !isFinished) {
+        suppressClickIndex = activeIndex;
+        window.clearTimeout(suppressClickTimer);
+        suppressClickTimer = window.setTimeout(clearSuppressedClick, 900);
+        toggleFlag(activeIndex);
+      }
+    }, LONG_PRESS_MS);
+  }
+
+  function handlePointerEnd() {
+    clearLongPress();
+  }
+
+  function handleContextMenu(event) {
+    if (event.target.closest(".mines-cell")) {
+      event.preventDefault();
+    }
+  }
+
+  function clearLongPress() {
+    window.clearTimeout(longPressTimer);
+    longPressTimer = null;
+
+    if (Number.isInteger(longPressIndex)) {
+      boardEl.querySelector(`[data-index="${longPressIndex}"]`)?.classList.remove("is-long-press");
+    }
+
+    longPressIndex = null;
+  }
+
+  function clearSuppressedClick() {
+    window.clearTimeout(suppressClickTimer);
+    suppressClickTimer = null;
+    suppressClickIndex = null;
+  }
+
+  function playBombSound() {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContext) return;
+
+    audioContext ||= new AudioContext();
+    audioContext.resume().catch(() => { });
+    const now = audioContext.currentTime;
+    const noiseLength = Math.floor(audioContext.sampleRate * 0.32);
+    const noiseBuffer = audioContext.createBuffer(1, noiseLength, audioContext.sampleRate);
+    const noiseData = noiseBuffer.getChannelData(0);
+
+    for (let index = 0; index < noiseLength; index += 1) {
+      noiseData[index] = (Math.random() * 2 - 1) * (1 - index / noiseLength);
+    }
+
+    const noise = audioContext.createBufferSource();
+    const noiseGain = audioContext.createGain();
+    const boom = audioContext.createOscillator();
+    const boomGain = audioContext.createGain();
+    noise.buffer = noiseBuffer;
+    noiseGain.gain.setValueAtTime(BOMB_VOLUME * 0.9, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
+    boom.type = "sawtooth";
+    boom.frequency.setValueAtTime(115, now);
+    boom.frequency.exponentialRampToValueAtTime(42, now + 0.34);
+    boomGain.gain.setValueAtTime(BOMB_VOLUME, now);
+    boomGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.38);
+    noise.connect(noiseGain).connect(audioContext.destination);
+    boom.connect(boomGain).connect(audioContext.destination);
+    noise.start(now);
+    noise.stop(now + 0.36);
+    boom.start(now);
+    boom.stop(now + 0.4);
+  }
+
+  function playWinHorn() {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContext) return;
+
+    audioContext ||= new AudioContext();
+    audioContext.resume().catch(() => { });
+    const start = audioContext.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.5];
+
+    notes.forEach((frequency, index) => {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const noteStart = start + index * 0.12;
+      oscillator.type = index === notes.length - 1 ? "square" : "triangle";
+      oscillator.frequency.setValueAtTime(frequency, noteStart);
+      gain.gain.setValueAtTime(0.0001, noteStart);
+      gain.gain.exponentialRampToValueAtTime(HORN_VOLUME, noteStart + 0.018);
+      gain.gain.setValueAtTime(HORN_VOLUME, noteStart + (index === notes.length - 1 ? 0.11 : 0.05));
+      gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + (index === notes.length - 1 ? 0.42 : 0.16));
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start(noteStart);
+      oscillator.stop(noteStart + (index === notes.length - 1 ? 0.44 : 0.18));
+    });
+  }
+
+  function launchConfetti() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    clearConfetti();
+
+    for (let index = 0; index < 72; index += 1) {
+      const piece = document.createElement("span");
+      piece.style.setProperty("--confetti-x", `${Math.random() * 100}vw`);
+      piece.style.setProperty("--confetti-drift", `${Math.random() * 180 - 90}px`);
+      piece.style.setProperty("--confetti-delay", `${Math.random() * 0.45}s`);
+      piece.style.setProperty("--confetti-duration", `${1.8 + Math.random() * 1.5}s`);
+      piece.style.setProperty("--confetti-spin", `${360 + Math.random() * 900}deg`);
+      piece.style.setProperty("--confetti-color", CELEBRATION_COLORS[index % CELEBRATION_COLORS.length]);
+      confetti.append(piece);
+    }
+
+    confettiTimer = window.setTimeout(clearConfetti, 3800);
+  }
+
+  function clearConfetti() {
+    window.clearTimeout(confettiTimer);
+    confetti.replaceChildren();
+  }
+
   boardEl.addEventListener("click", handleBoardClick);
+  boardEl.addEventListener("pointerdown", handlePointerDown);
+  boardEl.addEventListener("pointerup", handlePointerEnd);
+  boardEl.addEventListener("pointerleave", handlePointerEnd);
+  boardEl.addEventListener("pointercancel", handlePointerEnd);
+  boardEl.addEventListener("contextmenu", handleContextMenu);
   flagToggle.addEventListener("click", toggleFlagMode);
   newGameButton.addEventListener("click", newGame);
   newGame();
 
   return {
     cleanup() {
+      clearConfetti();
+      clearLongPress();
+      clearSuppressedClick();
       boardEl.removeEventListener("click", handleBoardClick);
+      boardEl.removeEventListener("pointerdown", handlePointerDown);
+      boardEl.removeEventListener("pointerup", handlePointerEnd);
+      boardEl.removeEventListener("pointerleave", handlePointerEnd);
+      boardEl.removeEventListener("pointercancel", handlePointerEnd);
+      boardEl.removeEventListener("contextmenu", handleContextMenu);
       flagToggle.removeEventListener("click", toggleFlagMode);
       newGameButton.removeEventListener("click", newGame);
+      audioContext?.close?.().catch(() => { });
     }
   };
 }
