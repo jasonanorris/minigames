@@ -387,9 +387,9 @@ test("Mines plays in medium mode, reveals safely, flags, and restarts", async ({
   await expect(page.locator("body")).not.toHaveClass(/is-small-game/);
   await expect(page.locator("#small-game-back")).toBeVisible();
   await expect(page.locator(".launcher-controls")).toBeHidden();
-  await expect(page.locator(".mines-cell")).toHaveCount(64);
+  await expect(page.locator(".mines-cell")).toHaveCount(112);
   await expect(page.locator("#mines-left")).toHaveText("10");
-  await expect(page.locator("#mines-safe")).toHaveText("0 / 54");
+  await expect(page.locator("#mines-safe")).toHaveText("0 / 102");
 
   const minesFitsDisplay = await page.evaluate(() => {
     const stageContent = document.querySelector(".stage-content").getBoundingClientRect();
@@ -401,7 +401,7 @@ test("Mines plays in medium mode, reveals safely, flags, and restarts", async ({
   await page.locator(".mines-cell").first().click();
   await expect(page.locator(".mines-cell.is-revealed").first()).toBeVisible();
   await expect(page.locator(".mines-cell.is-mine")).toHaveCount(0);
-  await expect(page.locator("#mines-safe")).not.toHaveText("0 / 54");
+  await expect(page.locator("#mines-safe")).not.toHaveText("0 / 102");
 
   const longPressCell = page.locator(".mines-cell:not(:disabled)").first();
   const longPressBox = await longPressCell.boundingBox();
@@ -421,7 +421,7 @@ test("Mines plays in medium mode, reveals safely, flags, and restarts", async ({
 
   await page.locator("#mines-new-game").click();
   await expect(page.locator("#mines-left")).toHaveText("10");
-  await expect(page.locator("#mines-safe")).toHaveText("0 / 54");
+  await expect(page.locator("#mines-safe")).toHaveText("0 / 102");
   await expect(page.locator(".mines-cell.is-revealed")).toHaveCount(0);
   await expect(page.locator(".mines-cell.is-flagged")).toHaveCount(0);
 });

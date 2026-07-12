@@ -1,6 +1,7 @@
-const SIZE = 8;
+const ROWS = 14;
+const COLUMNS = 8;
 const MINE_COUNT = 10;
-const CELL_COUNT = SIZE * SIZE;
+const CELL_COUNT = ROWS * COLUMNS;
 const NEIGHBOR_OFFSETS = [
   [-1, -1],
   [-1, 0],
@@ -254,8 +255,8 @@ export function startMines({ stage }) {
   }
 
   function getCellLabel(cell) {
-    const row = Math.floor(cell.index / SIZE) + 1;
-    const column = (cell.index % SIZE) + 1;
+    const row = Math.floor(cell.index / COLUMNS) + 1;
+    const column = (cell.index % COLUMNS) + 1;
 
     if (cell.isFlagged && !cell.isRevealed) return `Flagged row ${row}, column ${column}`;
     if (!cell.isRevealed) return `Hidden row ${row}, column ${column}`;
@@ -480,16 +481,16 @@ function createEmptyCells() {
 }
 
 function getNeighbors(index) {
-  const row = Math.floor(index / SIZE);
-  const column = index % SIZE;
+  const row = Math.floor(index / COLUMNS);
+  const column = index % COLUMNS;
   const neighbors = [];
 
   for (const [rowOffset, columnOffset] of NEIGHBOR_OFFSETS) {
     const nextRow = row + rowOffset;
     const nextColumn = column + columnOffset;
 
-    if (nextRow >= 0 && nextRow < SIZE && nextColumn >= 0 && nextColumn < SIZE) {
-      neighbors.push(nextRow * SIZE + nextColumn);
+    if (nextRow >= 0 && nextRow < ROWS && nextColumn >= 0 && nextColumn < COLUMNS) {
+      neighbors.push(nextRow * COLUMNS + nextColumn);
     }
   }
 
