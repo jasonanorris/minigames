@@ -1069,25 +1069,32 @@ body.is-medium-game .stage-content {
   position: absolute;
   top: var(--firework-y);
   left: var(--firework-x);
-  width: 7px;
-  height: 7px;
+  width: 11px;
+  height: 11px;
   border-radius: 999px;
   background: var(--firework-color);
-  box-shadow: 0 0 12px var(--firework-color);
+  box-shadow:
+    0 0 10px var(--firework-color),
+    0 0 24px var(--firework-color),
+    0 0 42px rgba(255, 255, 255, .32);
   opacity: 0;
-  animation: tic-firework-burst 920ms var(--firework-delay) ease-out forwards;
+  animation: tic-firework-burst 1200ms var(--firework-delay) ease-out forwards;
   transform: translate(-50%, -50%) rotate(var(--firework-angle)) translateX(0) scale(.2);
 }
 
 .tic-fireworks span:nth-child(4n) {
-  width: 10px;
-  height: 3px;
+  width: 16px;
+  height: 5px;
   border-radius: 3px;
 }
 
 .tic-fireworks span:nth-child(5n) {
-  width: 5px;
-  height: 5px;
+  width: 8px;
+  height: 8px;
+}
+
+.tic-fireworks span.is-gentle {
+  animation-duration: 1600ms;
 }
 
 .wordle-game {

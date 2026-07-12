@@ -364,14 +364,16 @@ test("Tic Tac Toe plays in small mode, scores a win, and restarts", async ({ pag
   await expect(page.locator("#tic-win-title")).toHaveText("X wins!");
   await expect(page.locator("#tic-winner")).toHaveText("Player X");
   await expect(page.locator("#tic-fireworks span")).toHaveCount(84);
+  await page.mouse.click(10, 10);
+  await expect(page.locator("#tic-win-modal")).toBeHidden();
+  await expect(page.locator(".tic-cell.is-winning")).toHaveCount(3);
   await expect
     .poll(() =>
       page.evaluate(() => JSON.parse(localStorage.getItem("minigames.ticTacToe.score") || "{}").X)
     )
     .toBe(1);
 
-  await page.locator("#tic-modal-new-round").click();
-  await expect(page.locator("#tic-win-modal")).toBeHidden();
+  await page.locator("#tic-restart").click();
   await expect(page.locator("#tic-message")).toHaveText("X goes first.");
   await expect(page.locator(".tic-cell:not(:empty)")).toHaveCount(0);
   await expect(page.locator("#tic-score-x")).toHaveText("1");

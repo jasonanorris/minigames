@@ -11,6 +11,7 @@ const WIN_LINES = [
 ];
 const FIREWORK_COLORS = ["#ff4d8d", "#ffd166", "#06d6a0", "#4cc9f0", "#9b5de5", "#f78c6b"];
 const FIREWORK_COUNT = 84;
+const REDUCED_MOTION_FIREWORK_COUNT = 30;
 const HORN_VOLUME = 0.32;
 
 export function startTicTacToe({ stage }) {
@@ -173,6 +174,11 @@ export function startTicTacToe({ stage }) {
     }
   }
 
+  function dismissWinModal() {
+    closeWinModal();
+    restartButton.focus();
+  }
+
   function playWinHorn() {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -206,20 +212,24 @@ export function startTicTacToe({ stage }) {
   }
 
   function launchFireworks() {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
     clearFireworks();
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const sparkCount = prefersReducedMotion ? REDUCED_MOTION_FIREWORK_COUNT : FIREWORK_COUNT;
 
-    for (let index = 0; index < FIREWORK_COUNT; index += 1) {
+    for (let index = 0; index < sparkCount; index += 1) {
       const spark = document.createElement("span");
       const burstIndex = index % 7;
       const angle = ((index % 12) * 30) + (Math.random() * 18 - 9);
       const x = 14 + ((burstIndex * 13) % 72) + Math.random() * 8;
       const y = 14 + ((burstIndex * 9) % 36) + Math.random() * 8;
+      spark.classList.toggle("is-gentle", prefersReducedMotion);
       spark.style.setProperty("--firework-x", `${x}vw`);
       spark.style.setProperty("--firework-y", `${y}vh`);
       spark.style.setProperty("--firework-angle", `${angle}deg`);
-      spark.style.setProperty("--firework-distance", `${44 + Math.random() * 82}px`);
+      spark.style.setProperty(
+        "--firework-distance",
+        `${prefersReducedMotion ? 18 + Math.random() * 24 : 58 + Math.random() * 110}px`
+      );
       spark.style.setProperty("--firework-delay", `${burstIndex * 0.12 + Math.random() * 0.08}s`);
       spark.style.setProperty("--firework-color", FIREWORK_COLORS[index % FIREWORK_COLORS.length]);
       fireworks.append(spark);
@@ -262,9 +272,25 @@ export function startTicTacToe({ stage }) {
     return value ? `${value} at row ${row}, column ${column}` : `Empty row ${row}, column ${column}`;
   }
 
+  function handleModalClick(event) {
+    if (event.target !== winModal) return;
+
+    const rect = winModal.getBoundingClientRect();
+    const isInsideModal =
+      event.clientX >= rect.left &&
+      event.clientX <= rect.right &&
+      event.clientY >= rect.top &&
+      event.clientY <= rect.bottom;
+
+    if (!isInsideModal) {
+      dismissWinModal();
+    }
+  }
+
   boardEl.addEventListener("click", handleCellClick);
   restartButton.addEventListener("click", restart);
   modalNewRoundButton.addEventListener("click", restart);
+  winModal.addEventListener("click", handleModalClick);
   renderBoard();
   focusFrame = window.requestAnimationFrame(focusFirstOpenCell);
 
@@ -275,6 +301,7 @@ export function startTicTacToe({ stage }) {
       boardEl.removeEventListener("click", handleCellClick);
       restartButton.removeEventListener("click", restart);
       modalNewRoundButton.removeEventListener("click", restart);
+      winModal.removeEventListener("click", handleModalClick);
       audioContext?.close?.().catch(() => { });
     }
   };
