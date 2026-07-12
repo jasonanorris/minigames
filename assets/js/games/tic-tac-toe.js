@@ -11,7 +11,7 @@ const WIN_LINES = [
 ];
 const FIREWORK_COLORS = ["#ff4d8d", "#ffd166", "#06d6a0", "#4cc9f0", "#9b5de5", "#f78c6b"];
 const FIREWORK_COUNT = 84;
-const REDUCED_MOTION_FIREWORK_COUNT = 30;
+const REDUCED_MOTION_FIREWORK_COUNT = 36;
 const HORN_VOLUME = 0.32;
 
 export function startTicTacToe({ stage }) {
@@ -218,24 +218,20 @@ export function startTicTacToe({ stage }) {
 
     for (let index = 0; index < sparkCount; index += 1) {
       const spark = document.createElement("span");
-      const burstIndex = index % 7;
-      const angle = ((index % 12) * 30) + (Math.random() * 18 - 9);
-      const x = 14 + ((burstIndex * 13) % 72) + Math.random() * 8;
-      const y = 14 + ((burstIndex * 9) % 36) + Math.random() * 8;
+      const burstIndex = index % 9;
       spark.classList.toggle("is-gentle", prefersReducedMotion);
-      spark.style.setProperty("--firework-x", `${x}vw`);
-      spark.style.setProperty("--firework-y", `${y}vh`);
-      spark.style.setProperty("--firework-angle", `${angle}deg`);
-      spark.style.setProperty(
-        "--firework-distance",
-        `${prefersReducedMotion ? 18 + Math.random() * 24 : 58 + Math.random() * 110}px`
-      );
+      spark.style.setProperty("--firework-x", `${Math.random() * 100}vw`);
+      spark.style.setProperty("--firework-start-y", `${prefersReducedMotion ? 2 : -8}vh`);
+      spark.style.setProperty("--firework-end-y", `${prefersReducedMotion ? 34 + Math.random() * 18 : 100 + Math.random() * 24}vh`);
+      spark.style.setProperty("--firework-drift", `${Math.random() * 210 - 105}px`);
       spark.style.setProperty("--firework-delay", `${burstIndex * 0.12 + Math.random() * 0.08}s`);
+      spark.style.setProperty("--firework-duration", `${prefersReducedMotion ? 1.7 + Math.random() * 0.4 : 2.2 + Math.random() * 1.4}s`);
+      spark.style.setProperty("--firework-spin", `${360 + Math.random() * 1080}deg`);
       spark.style.setProperty("--firework-color", FIREWORK_COLORS[index % FIREWORK_COLORS.length]);
       fireworks.append(spark);
     }
 
-    fireworksTimer = window.setTimeout(clearFireworks, 2200);
+    fireworksTimer = window.setTimeout(clearFireworks, prefersReducedMotion ? 2600 : 4300);
   }
 
   function clearFireworks() {
